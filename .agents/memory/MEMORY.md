@@ -1,0 +1,1 @@
+- [RanchTrack auth pattern](ranchtrack-auth.md) — in-memory Map sessions, SHA-256+salt, cookie auth; `custom-fetch.ts` must keep `credentials:"include"` for cookies to flow.

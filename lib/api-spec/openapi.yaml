@@ -1,22 +1,35 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: RanchTrack Cattle Management System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: cattle
+    description: Cattle management
+  - name: tasks
+    description: Farm task management
+  - name: fields
+    description: Field/pasture management
+  - name: employees
+    description: Employee management
+  - name: settings
+    description: Farm settings
+  - name: dashboard
+    description: Dashboard data
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +37,604 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: registerFarm
+      tags: [auth]
+      summary: Register a new farm account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FarmRegistration"
+      responses:
+        "201":
+          description: Farm registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      operationId: loginFarm
+      tags: [auth]
+      summary: Login as farm owner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FarmLogin"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/employee-login:
+    post:
+      operationId: loginEmployee
+      tags: [auth]
+      summary: Login as employee/employer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeLogin"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current session info
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Not authenticated
+
+  /auth/change-password:
+    post:
+      operationId: changePassword
+      tags: [auth]
+      summary: Change farm account password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordChange"
+      responses:
+        "200":
+          description: Password changed
+        "400":
+          description: Invalid current password
+
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get dashboard stats and recent data
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardData"
+
+  /cattle:
+    get:
+      operationId: listCattle
+      tags: [cattle]
+      summary: List all active cattle for the farm
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search by tag number or name
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, sold, deceased]
+          description: Filter by status
+        - name: gender
+          in: query
+          schema:
+            type: string
+          description: Filter by gender
+      responses:
+        "200":
+          description: List of cattle
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cattle"
+    post:
+      operationId: createCattle
+      tags: [cattle]
+      summary: Register new cattle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CattleInput"
+      responses:
+        "201":
+          description: Cattle registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cattle"
+
+  /cattle/{id}:
+    get:
+      operationId: getCattle
+      tags: [cattle]
+      summary: Get cattle details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cattle detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CattleDetail"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateCattle
+      tags: [cattle]
+      summary: Update cattle record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CattleUpdate"
+      responses:
+        "200":
+          description: Updated cattle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cattle"
+    delete:
+      operationId: deleteCattle
+      tags: [cattle]
+      summary: Delete cattle record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /cattle/{id}/status:
+    patch:
+      operationId: updateCattleStatus
+      tags: [cattle]
+      summary: Mark cattle as sold or deceased
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CattleStatusUpdate"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cattle"
+
+  /cattle/{id}/weights:
+    get:
+      operationId: listWeights
+      tags: [cattle]
+      summary: Get weight history for cattle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Weight records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeightRecord"
+    post:
+      operationId: addWeight
+      tags: [cattle]
+      summary: Add weight record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WeightInput"
+      responses:
+        "201":
+          description: Weight recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeightRecord"
+
+  /cattle/{id}/health:
+    get:
+      operationId: listHealthRecords
+      tags: [cattle]
+      summary: Get health records for cattle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Health records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HealthRecord"
+    post:
+      operationId: addHealthRecord
+      tags: [cattle]
+      summary: Add health record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HealthInput"
+      responses:
+        "201":
+          description: Health record added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthRecord"
+
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [tasks]
+      summary: List farm tasks
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, completed]
+      responses:
+        "200":
+          description: Task list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Post a new job/task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    patch:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update task (including mark complete)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    delete:
+      operationId: deleteTask
+      tags: [tasks]
+      summary: Delete task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /fields:
+    get:
+      operationId: listFields
+      tags: [fields]
+      summary: List all fields/pastures
+      responses:
+        "200":
+          description: Field list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Field"
+    post:
+      operationId: createField
+      tags: [fields]
+      summary: Add a new field/pasture
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FieldInput"
+      responses:
+        "201":
+          description: Field created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Field"
+
+  /fields/{id}:
+    patch:
+      operationId: updateField
+      tags: [fields]
+      summary: Update field
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FieldUpdate"
+      responses:
+        "200":
+          description: Updated field
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Field"
+    delete:
+      operationId: deleteField
+      tags: [fields]
+      summary: Delete field
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /employees:
+    get:
+      operationId: listEmployees
+      tags: [employees]
+      summary: List all staff members
+      responses:
+        "200":
+          description: Staff list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Employee"
+    post:
+      operationId: createEmployee
+      tags: [employees]
+      summary: Add a staff member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeInput"
+      responses:
+        "201":
+          description: Employee added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+
+  /employees/{id}:
+    patch:
+      operationId: updateEmployee
+      tags: [employees]
+      summary: Update employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeUpdate"
+      responses:
+        "200":
+          description: Updated employee
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+    delete:
+      operationId: deleteEmployee
+      tags: [employees]
+      summary: Delete employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get farm settings
+      responses:
+        "200":
+          description: Farm settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FarmSettings"
+    patch:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update farm settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsUpdate"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FarmSettings"
+
+  /settings/account:
+    delete:
+      operationId: deleteAccount
+      tags: [settings]
+      summary: Delete farm account and all data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountDelete"
+      responses:
+        "200":
+          description: Account deleted
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +642,463 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    FarmRegistration:
+      type: object
+      required: [farmName, email, password]
+      properties:
+        farmName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    FarmLogin:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    EmployeeLogin:
+      type: object
+      required: [farmEmail, username, password]
+      properties:
+        farmEmail:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [farmId, farmName, email, role]
+      properties:
+        farmId:
+          type: integer
+        farmName:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [owner, employer, employee]
+        employeeId:
+          type: ["integer", "null"]
+        employeeName:
+          type: ["string", "null"]
+
+    PasswordChange:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+
+    DashboardData:
+      type: object
+      required: [totalHerd, activeHead, calves, activeTasks, recentRegistrations]
+      properties:
+        totalHerd:
+          type: integer
+        activeHead:
+          type: integer
+        calves:
+          type: integer
+        activeTasks:
+          type: integer
+        recentRegistrations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Cattle"
+        herdChange:
+          type: ["number", "null"]
+        tasksTrend:
+          type: ["string", "null"]
+
+    Cattle:
+      type: object
+      required: [id, tagNumber, gender, status, createdAt]
+      properties:
+        id:
+          type: integer
+        tagNumber:
+          type: string
+        name:
+          type: ["string", "null"]
+        gender:
+          type: string
+          enum: [female, male, bull, steer]
+        breed:
+          type: ["string", "null"]
+        birthDate:
+          type: ["string", "null"]
+        motherId:
+          type: ["integer", "null"]
+        motherTag:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, sold, deceased]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    CattleDetail:
+      type: object
+      required: [id, tagNumber, gender, status, createdAt]
+      properties:
+        id:
+          type: integer
+        tagNumber:
+          type: string
+        name:
+          type: ["string", "null"]
+        gender:
+          type: string
+        breed:
+          type: ["string", "null"]
+        birthDate:
+          type: ["string", "null"]
+        motherId:
+          type: ["integer", "null"]
+        motherTag:
+          type: ["string", "null"]
+        status:
+          type: string
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        calves:
+          type: array
+          items:
+            $ref: "#/components/schemas/Cattle"
+        latestWeight:
+          type: ["number", "null"]
+
+    CattleInput:
+      type: object
+      required: [tagNumber, gender]
+      properties:
+        tagNumber:
+          type: string
+        name:
+          type: string
+        gender:
+          type: string
+          enum: [female, male, bull, steer]
+        breed:
+          type: string
+        birthDate:
+          type: string
+        motherId:
+          type: ["integer", "null"]
+        notes:
+          type: string
+
+    CattleUpdate:
+      type: object
+      properties:
+        tagNumber:
+          type: string
+        name:
+          type: ["string", "null"]
+        gender:
+          type: string
+        breed:
+          type: ["string", "null"]
+        birthDate:
+          type: ["string", "null"]
+        motherId:
+          type: ["integer", "null"]
+        notes:
+          type: ["string", "null"]
+
+    CattleStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [active, sold, deceased]
+        notes:
+          type: string
+
+    WeightRecord:
+      type: object
+      required: [id, cattleId, weight, date]
+      properties:
+        id:
+          type: integer
+        cattleId:
+          type: integer
+        weight:
+          type: number
+        unit:
+          type: string
+        date:
+          type: string
+        notes:
+          type: ["string", "null"]
+
+    WeightInput:
+      type: object
+      required: [weight, date]
+      properties:
+        weight:
+          type: number
+        unit:
+          type: string
+        date:
+          type: string
+        notes:
+          type: string
+
+    HealthRecord:
+      type: object
+      required: [id, cattleId, type, date]
+      properties:
+        id:
+          type: integer
+        cattleId:
+          type: integer
+        type:
+          type: string
+        description:
+          type: ["string", "null"]
+        date:
+          type: string
+        notes:
+          type: ["string", "null"]
+
+    HealthInput:
+      type: object
+      required: [type, date]
+      properties:
+        type:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+        notes:
+          type: string
+
+    Task:
+      type: object
+      required: [id, title, status, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        assignedToId:
+          type: ["integer", "null"]
+        assignedToName:
+          type: ["string", "null"]
+        dueDate:
+          type: ["string", "null"]
+        timeToFinish:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, completed]
+        completedAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    TaskInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        assignedToId:
+          type: ["integer", "null"]
+        dueDate:
+          type: string
+        timeToFinish:
+          type: string
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        assignedToId:
+          type: ["integer", "null"]
+        dueDate:
+          type: ["string", "null"]
+        timeToFinish:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, completed]
+
+    Field:
+      type: object
+      required: [id, name, status, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        area:
+          type: ["number", "null"]
+        status:
+          type: string
+          enum: [available, occupied, resting]
+        boundary:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        color:
+          type: string
+        createdAt:
+          type: string
+
+    FieldInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        area:
+          type: number
+        status:
+          type: string
+          enum: [available, occupied, resting]
+        boundary:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        color:
+          type: string
+
+    FieldUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        area:
+          type: ["number", "null"]
+        status:
+          type: string
+          enum: [available, occupied, resting]
+        boundary:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        color:
+          type: string
+
+    Employee:
+      type: object
+      required: [id, fullName, username, role, createdAt]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+          enum: [employer, employee]
+        position:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    EmployeeInput:
+      type: object
+      required: [fullName, username, password, role]
+      properties:
+        fullName:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [employer, employee]
+        position:
+          type: string
+        phone:
+          type: string
+
+    EmployeeUpdate:
+      type: object
+      properties:
+        fullName:
+          type: string
+        role:
+          type: string
+          enum: [employer, employee]
+        position:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+
+    FarmSettings:
+      type: object
+      required: [farmId, farmName, ownerName, email]
+      properties:
+        farmId:
+          type: integer
+        farmName:
+          type: string
+        ownerName:
+          type: string
+        email:
+          type: string
+        location:
+          type: ["string", "null"]
+
+    SettingsUpdate:
+      type: object
+      properties:
+        farmName:
+          type: string
+        ownerName:
+          type: string
+        location:
+          type: ["string", "null"]
+
+    AccountDelete:
+      type: object
+      required: [password]
+      properties:
+        password:
+          type: string

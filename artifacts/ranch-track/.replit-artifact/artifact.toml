@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "RanchTrack"
+version = "1.0.0"
+id = "artifacts/ranch-track"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18412
+
+[services.development]
+run = "pnpm --filter @workspace/ranch-track run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ranch-track", "run", "build" ]
+publicDir = "artifacts/ranch-track/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18412"
+BASE_PATH = "/"
