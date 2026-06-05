@@ -17,4 +17,12 @@ export interface DashboardData {
   herdChange?: number | null;
   /** @nullable */
   tasksTrend?: string | null;
+  /** @nullable */
+  acresPlanted?: number | null;
+  /** @nullable */
+  expectedYield?: number | null;
+  /** @nullable */
+  storedGrain?: number | null;
+  /** @nullable */
+  equipmentNeedingService?: number | null;
 }

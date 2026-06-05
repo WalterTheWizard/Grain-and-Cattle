@@ -4,6 +4,7 @@ import { useClerk } from "@clerk/react";
 import { useLogout, getGetMeQueryKey, type AuthResponse } from "@workspace/api-client-react";
 import {
   LayoutDashboard, Beef, ClipboardList, Map, Users, Settings, LogOut, Clock,
+  Sprout, Warehouse, Tractor, FlaskConical,
 } from "lucide-react";
 
 interface LayoutProps {
@@ -13,14 +14,37 @@ interface LayoutProps {
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-const navItems = [
-  { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/cattle", label: "Cattle Records", icon: Beef },
-  { path: "/tasks", label: "Farm Tasks", icon: ClipboardList },
-  { path: "/time-cards", label: "Time Cards", icon: Clock },
-  { path: "/fields", label: "Field Management", icon: Map },
-  { path: "/employees", label: "Employees", icon: Users },
-  { path: "/settings", label: "Settings", icon: Settings },
+const navGroups: {
+  label: string | null;
+  items: { path: string; label: string; icon: React.ElementType }[];
+}[] = [
+  {
+    label: null,
+    items: [{ path: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    label: "Livestock",
+    items: [
+      { path: "/cattle", label: "Cattle Records", icon: Beef },
+      { path: "/tasks", label: "Farm Tasks", icon: ClipboardList },
+      { path: "/time-cards", label: "Time Cards", icon: Clock },
+      { path: "/fields", label: "Field Management", icon: Map },
+      { path: "/employees", label: "Employees", icon: Users },
+    ],
+  },
+  {
+    label: "Grain",
+    items: [
+      { path: "/crops", label: "Crops", icon: Sprout },
+      { path: "/storage", label: "Grain Storage", icon: Warehouse },
+      { path: "/equipment", label: "Equipment", icon: Tractor },
+      { path: "/inputs", label: "Inputs", icon: FlaskConical },
+    ],
+  },
+  {
+    label: null,
+    items: [{ path: "/settings", label: "Settings", icon: Settings }],
+  },
 ];
 
 function RanchTrackLogo() {
@@ -78,26 +102,35 @@ export default function Layout({ user, children }: LayoutProps) {
           </div>
         </div>
 
-        <nav className="flex-1 py-3 px-2 flex flex-col gap-0.5">
-          {navItems.map((item) => {
-            const isActive = location === item.path || (item.path !== "/dashboard" && location.startsWith(item.path));
-            const Icon = item.icon;
-            return (
-              <Link key={item.path} href={item.path}>
-                <div
-                  data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
-                  className={`flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                    isActive
-                      ? "bg-accent text-primary font-semibold"
-                      : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-                  }`}
-                >
-                  <Icon size={15} className={isActive ? "text-primary" : ""} />
-                  <span className="leading-tight">{item.label}</span>
-                </div>
-              </Link>
-            );
-          })}
+        <nav className="flex-1 py-3 px-2 flex flex-col gap-0.5 overflow-y-auto">
+          {navGroups.map((group, gi) => (
+            <div key={group.label ?? `group-${gi}`} className={group.label ? "mt-2" : ""}>
+              {group.label && (
+                <p className="px-2 pt-1 pb-1 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  {group.label}
+                </p>
+              )}
+              {group.items.map((item) => {
+                const isActive = location === item.path || (item.path !== "/dashboard" && location.startsWith(item.path));
+                const Icon = item.icon;
+                return (
+                  <Link key={item.path} href={item.path}>
+                    <div
+                      data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+                      className={`flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium cursor-pointer transition-colors ${
+                        isActive
+                          ? "bg-accent text-primary font-semibold"
+                          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                      }`}
+                    >
+                      <Icon size={15} className={isActive ? "text-primary" : ""} />
+                      <span className="leading-tight">{item.label}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         <div className="p-3 border-t border-border space-y-2">

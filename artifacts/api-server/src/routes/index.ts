@@ -8,6 +8,10 @@ import fieldsRouter from "./fields";
 import employeesRouter from "./employees";
 import settingsRouter from "./settings";
 import timeEntriesRouter from "./time-entries";
+import cropsRouter from "./crops";
+import storageRouter from "./storage";
+import equipmentRouter from "./equipment";
+import inputsRouter from "./inputs";
 
 const router: IRouter = Router();
 
@@ -20,5 +24,9 @@ router.use(fieldsRouter);
 router.use(employeesRouter);
 router.use(settingsRouter);
 router.use(timeEntriesRouter);
+router.use(cropsRouter);
+router.use(storageRouter);
+router.use(equipmentRouter);
+router.use(inputsRouter);
 
 export default router;

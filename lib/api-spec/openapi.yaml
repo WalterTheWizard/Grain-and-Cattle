@@ -25,6 +25,14 @@ tags:
     description: Dashboard data
   - name: time-entries
     description: Time card and employee clock-in/out
+  - name: crops
+    description: Crop planting and harvest tracking
+  - name: storage
+    description: Grain storage bins and silos
+  - name: equipment
+    description: Equipment and maintenance logs
+  - name: inputs
+    description: Seed, fertilizer, and chemical inputs
 
 paths:
   /healthz:
@@ -463,6 +471,404 @@ paths:
         "204":
           description: Deleted
 
+  /crops:
+    get:
+      operationId: listCrops
+      tags: [crops]
+      summary: List all crop plantings
+      responses:
+        "200":
+          description: Crop list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Crop"
+    post:
+      operationId: createCrop
+      tags: [crops]
+      summary: Add a crop planting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CropInput"
+      responses:
+        "201":
+          description: Crop created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crop"
+
+  /crops/{id}:
+    patch:
+      operationId: updateCrop
+      tags: [crops]
+      summary: Update crop planting
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CropUpdate"
+      responses:
+        "200":
+          description: Updated crop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crop"
+    delete:
+      operationId: deleteCrop
+      tags: [crops]
+      summary: Delete crop planting
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /storage-bins:
+    get:
+      operationId: listStorageBins
+      tags: [storage]
+      summary: List all storage bins
+      responses:
+        "200":
+          description: Storage bin list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StorageBin"
+    post:
+      operationId: createStorageBin
+      tags: [storage]
+      summary: Add a storage bin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StorageBinInput"
+      responses:
+        "201":
+          description: Storage bin created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StorageBin"
+
+  /storage-bins/{id}:
+    patch:
+      operationId: updateStorageBin
+      tags: [storage]
+      summary: Update storage bin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StorageBinUpdate"
+      responses:
+        "200":
+          description: Updated storage bin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StorageBin"
+    delete:
+      operationId: deleteStorageBin
+      tags: [storage]
+      summary: Delete storage bin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /equipment:
+    get:
+      operationId: listEquipment
+      tags: [equipment]
+      summary: List all equipment
+      responses:
+        "200":
+          description: Equipment list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Equipment"
+    post:
+      operationId: createEquipment
+      tags: [equipment]
+      summary: Add equipment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EquipmentInput"
+      responses:
+        "201":
+          description: Equipment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Equipment"
+
+  /equipment/{id}:
+    patch:
+      operationId: updateEquipment
+      tags: [equipment]
+      summary: Update equipment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EquipmentUpdate"
+      responses:
+        "200":
+          description: Updated equipment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Equipment"
+    delete:
+      operationId: deleteEquipment
+      tags: [equipment]
+      summary: Delete equipment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /equipment/{id}/maintenance:
+    get:
+      operationId: listMaintenanceLogs
+      tags: [equipment]
+      summary: List maintenance logs for equipment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Maintenance log list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceLog"
+    post:
+      operationId: addMaintenanceLog
+      tags: [equipment]
+      summary: Add a maintenance log
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceLogInput"
+      responses:
+        "201":
+          description: Maintenance log created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceLog"
+
+  /maintenance/{id}:
+    delete:
+      operationId: deleteMaintenanceLog
+      tags: [equipment]
+      summary: Delete maintenance log
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /inputs:
+    get:
+      operationId: listInputs
+      tags: [inputs]
+      summary: List all inputs (seed/fertilizer/chemical)
+      responses:
+        "200":
+          description: Input list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Input"
+    post:
+      operationId: createInput
+      tags: [inputs]
+      summary: Add an input
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InputInput"
+      responses:
+        "201":
+          description: Input created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Input"
+
+  /inputs/{id}:
+    patch:
+      operationId: updateInput
+      tags: [inputs]
+      summary: Update input
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InputUpdate"
+      responses:
+        "200":
+          description: Updated input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Input"
+    delete:
+      operationId: deleteInput
+      tags: [inputs]
+      summary: Delete input
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /inputs/{id}/applications:
+    get:
+      operationId: listInputApplications
+      tags: [inputs]
+      summary: List application records for an input
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Application list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InputApplication"
+    post:
+      operationId: addInputApplication
+      tags: [inputs]
+      summary: Record an input application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InputApplicationInput"
+      responses:
+        "201":
+          description: Application recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InputApplication"
+
+  /input-applications/{id}:
+    delete:
+      operationId: deleteInputApplication
+      tags: [inputs]
+      summary: Delete input application
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
   /employees:
     get:
       operationId: listEmployees
@@ -719,6 +1125,14 @@ components:
           type: ["number", "null"]
         tasksTrend:
           type: ["string", "null"]
+        acresPlanted:
+          type: ["number", "null"]
+        expectedYield:
+          type: ["number", "null"]
+        storedGrain:
+          type: ["number", "null"]
+        equipmentNeedingService:
+          type: ["integer", "null"]
 
     Cattle:
       type: object
@@ -1132,5 +1546,370 @@ components:
     ClockOutInput:
       type: object
       properties:
+        notes:
+          type: string
+
+    Crop:
+      type: object
+      required: [id, cropType, status, yieldUnit, createdAt]
+      properties:
+        id:
+          type: integer
+        fieldId:
+          type: ["integer", "null"]
+        cropType:
+          type: string
+        variety:
+          type: ["string", "null"]
+        season:
+          type: ["string", "null"]
+        plantingDate:
+          type: ["string", "null"]
+        harvestDate:
+          type: ["string", "null"]
+        acreage:
+          type: ["number", "null"]
+        expectedYield:
+          type: ["number", "null"]
+        actualYield:
+          type: ["number", "null"]
+        yieldUnit:
+          type: string
+        status:
+          type: string
+          enum: [planned, planted, growing, harvested]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    CropInput:
+      type: object
+      required: [cropType]
+      properties:
+        fieldId:
+          type: integer
+        cropType:
+          type: string
+        variety:
+          type: string
+        season:
+          type: string
+        plantingDate:
+          type: string
+        harvestDate:
+          type: string
+        acreage:
+          type: number
+        expectedYield:
+          type: number
+        actualYield:
+          type: number
+        yieldUnit:
+          type: string
+        status:
+          type: string
+          enum: [planned, planted, growing, harvested]
+        notes:
+          type: string
+
+    CropUpdate:
+      type: object
+      properties:
+        fieldId:
+          type: ["integer", "null"]
+        cropType:
+          type: string
+        variety:
+          type: ["string", "null"]
+        season:
+          type: ["string", "null"]
+        plantingDate:
+          type: ["string", "null"]
+        harvestDate:
+          type: ["string", "null"]
+        acreage:
+          type: ["number", "null"]
+        expectedYield:
+          type: ["number", "null"]
+        actualYield:
+          type: ["number", "null"]
+        yieldUnit:
+          type: string
+        status:
+          type: string
+          enum: [planned, planted, growing, harvested]
+        notes:
+          type: ["string", "null"]
+
+    StorageBin:
+      type: object
+      required: [id, name, currentQuantity, status, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        grainType:
+          type: ["string", "null"]
+        capacity:
+          type: ["number", "null"]
+        currentQuantity:
+          type: number
+        moisture:
+          type: ["number", "null"]
+        location:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, maintenance, empty]
+        createdAt:
+          type: string
+
+    StorageBinInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        grainType:
+          type: string
+        capacity:
+          type: number
+        currentQuantity:
+          type: number
+        moisture:
+          type: number
+        location:
+          type: string
+        status:
+          type: string
+          enum: [active, maintenance, empty]
+
+    StorageBinUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        grainType:
+          type: ["string", "null"]
+        capacity:
+          type: ["number", "null"]
+        currentQuantity:
+          type: number
+        moisture:
+          type: ["number", "null"]
+        location:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, maintenance, empty]
+
+    Equipment:
+      type: object
+      required: [id, name, type, status, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [tractor, combine, planter, sprayer, truck, other]
+        make:
+          type: ["string", "null"]
+        model:
+          type: ["string", "null"]
+        year:
+          type: ["integer", "null"]
+        status:
+          type: string
+          enum: [operational, maintenance, repair, retired]
+        hoursUsed:
+          type: ["number", "null"]
+        purchaseDate:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    EquipmentInput:
+      type: object
+      required: [name, type]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [tractor, combine, planter, sprayer, truck, other]
+        make:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+        status:
+          type: string
+          enum: [operational, maintenance, repair, retired]
+        hoursUsed:
+          type: number
+        purchaseDate:
+          type: string
+        notes:
+          type: string
+
+    EquipmentUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [tractor, combine, planter, sprayer, truck, other]
+        make:
+          type: ["string", "null"]
+        model:
+          type: ["string", "null"]
+        year:
+          type: ["integer", "null"]
+        status:
+          type: string
+          enum: [operational, maintenance, repair, retired]
+        hoursUsed:
+          type: ["number", "null"]
+        purchaseDate:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+
+    MaintenanceLog:
+      type: object
+      required: [id, equipmentId, date, type]
+      properties:
+        id:
+          type: integer
+        equipmentId:
+          type: integer
+        date:
+          type: string
+        type:
+          type: string
+        description:
+          type: ["string", "null"]
+        cost:
+          type: ["number", "null"]
+        hoursAtService:
+          type: ["number", "null"]
+
+    MaintenanceLogInput:
+      type: object
+      required: [date, type]
+      properties:
+        date:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        cost:
+          type: number
+        hoursAtService:
+          type: number
+
+    Input:
+      type: object
+      required: [id, name, category, unit, quantityOnHand, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+          enum: [seed, fertilizer, chemical, other]
+        unit:
+          type: string
+        quantityOnHand:
+          type: number
+        costPerUnit:
+          type: ["number", "null"]
+        supplier:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    InputInput:
+      type: object
+      required: [name, category]
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          enum: [seed, fertilizer, chemical, other]
+        unit:
+          type: string
+        quantityOnHand:
+          type: number
+        costPerUnit:
+          type: number
+        supplier:
+          type: string
+        notes:
+          type: string
+
+    InputUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          enum: [seed, fertilizer, chemical, other]
+        unit:
+          type: string
+        quantityOnHand:
+          type: number
+        costPerUnit:
+          type: ["number", "null"]
+        supplier:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+
+    InputApplication:
+      type: object
+      required: [id, inputId, date, quantity]
+      properties:
+        id:
+          type: integer
+        inputId:
+          type: integer
+        cropId:
+          type: ["integer", "null"]
+        date:
+          type: string
+        quantity:
+          type: number
+        cost:
+          type: ["number", "null"]
+        notes:
+          type: ["string", "null"]
+
+    InputApplicationInput:
+      type: object
+      required: [date, quantity]
+      properties:
+        cropId:
+          type: integer
+        date:
+          type: string
+        quantity:
+          type: number
+        cost:
+          type: number
         notes:
           type: string

@@ -17,6 +17,10 @@ import FieldsPage from "@/pages/FieldsPage";
 import EmployeesPage from "@/pages/EmployeesPage";
 import SettingsPage from "@/pages/SettingsPage";
 import TimeCardPage from "@/pages/TimeCardPage";
+import CropsPage from "@/pages/CropsPage";
+import StoragePage from "@/pages/StoragePage";
+import EquipmentPage from "@/pages/EquipmentPage";
+import InputsPage from "@/pages/InputsPage";
 import NotFound from "@/pages/not-found";
 import type { AuthResponse } from "@workspace/api-client-react";
 
@@ -158,6 +162,10 @@ function AuthenticatedApp() {
         <Route path="/fields" component={FieldsPage} />
         <Route path="/employees" component={EmployeesPage} />
         <Route path="/time-cards" component={TimeCardPage} />
+        <Route path="/crops" component={CropsPage} />
+        <Route path="/storage" component={StoragePage} />
+        <Route path="/equipment" component={EquipmentPage} />
+        <Route path="/inputs" component={InputsPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route component={NotFound} />
       </Switch>

@@ -1,6 +1,6 @@
 # RanchTrack
 
-A full-stack cattle management system for ranchers to track livestock, tasks, fields, and employees.
+A full-stack farm management system for ranchers to track livestock (cattle, tasks, fields, employees) and grain operations (crops, storage, equipment, inputs).
 
 ## Run & Operate
 
@@ -42,16 +42,24 @@ A full-stack cattle management system for ranchers to track livestock, tasks, fi
 - **Contract-first API**: OpenAPI spec defines all endpoints; Orval generates type-safe hooks and schemas. Never write API types by hand. There are NO owner password endpoints (register/login/change-password were removed — Clerk handles those).
 - **Auth guard at root**: `App.tsx` wraps the app in `ClerkProvider`; `useGetMe` is gated on Clerk `useAuth().isLoaded` with `retry: false`. A 401 shows LoginPage, success shows Layout. `/sign-in/*?` and `/sign-up/*?` render Clerk's `<SignIn>`/`<SignUp>`. Owner logout = Clerk `signOut`; employee logout = custom `/auth/logout`. Account deletion is owner-only, deletes the Clerk user first (then the farm) and signs out.
 - **Leaflet loaded lazily**: `react-leaflet` and `leaflet/dist/leaflet.css` are dynamically imported in FieldsPage to avoid SSR issues and keep bundle lean.
+- **Cross-resource ownership checks**: Grain endpoints that accept a foreign key from another table (crops accepting `fieldId`, input applications accepting `cropId`) verify the referenced row belongs to the same `farmId` before writing, returning 400 if not. This prevents cross-tenant IDOR — relying on a FK reference alone is not enough since IDs are user-supplied.
 
 ## Product
 
 - **Login / Register**: Branded landing with two tabs — Farm Owner (Sign In / Register a New Farm CTAs that route to Clerk's hosted `/sign-in` and `/sign-up`, with Google + email) and Employee (custom farm-email + username + password form)
-- **Dashboard**: Live stats (total herd, active head, calves, active tasks) + recent registrations + quick actions
+- **Dashboard**: Live stats for both livestock (total herd, active head, calves, active tasks) and grain (active crops, storage usage, equipment needing maintenance, low-stock inputs) + recent registrations + quick actions
 - **Cattle Records**: Searchable list of active, sold, and deceased cattle. Register modal, detail page with weights + health record tabs, lineage tracking (mother/calves)
 - **Farm Tasks**: Pending/completed task tabs, assign to employees, due dates, time estimates
 - **Field Management**: Leaflet map showing field pins, field CRUD with acreage + status tracking
 - **Employees**: Staff directory with role badges (employer/employee), add/remove staff
 - **Settings**: Farm profile editing, system info, and account deletion (danger zone, owner-only — no password prompt; deletes the Clerk identity then the farm and signs out)
+
+### Grain (nav group separate from Livestock)
+
+- **Crops**: Crop plantings list with type, variety, season, acreage, planting/harvest dates, expected/actual yield, and status. Optionally links to a Field. CRUD via modal.
+- **Storage**: Grain storage bins with capacity, current quantity, contents, and condition tracking. CRUD via modal.
+- **Equipment**: Farm equipment register with type, status, and details. Per-equipment maintenance log dialog (add/list/delete maintenance records).
+- **Inputs**: Seed/fertilizer/chemical inventory with quantity on hand, cost, and supplier. Per-input application records dialog (log applications against a crop, add/list/delete).
 
 ## User preferences
 
@@ -59,7 +67,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-- After changing `lib/db/src/schema.ts`, run `pnpm --filter @workspace/db run push` to migrate the dev DB, then `pnpm run typecheck:libs` to rebuild declarations.
+- After changing the Drizzle schema (`lib/db/src/schema/*.ts`), run `pnpm --filter @workspace/db run push` to migrate the dev DB, then `pnpm run typecheck:libs` to rebuild declarations. If `push` prompts interactively (TTY), use `push --force` for non-destructive additive table/column changes.
 - After changing `lib/api-spec/openapi.yaml`, run `pnpm --filter @workspace/api-spec run codegen` before typechecking any package that imports `@workspace/api-client-react` or `@workspace/api-zod`.
 - The API server must be rebuilt before it picks up route changes (`pnpm --filter @workspace/api-server run dev` handles this automatically).
 - Leaflet default marker icons break with Vite bundling — FieldsPage sets custom icon URLs pointing to unpkg CDN.

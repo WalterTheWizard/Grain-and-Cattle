@@ -1,6 +1,9 @@
 import { useGetDashboard, getGetDashboardQueryKey } from "@workspace/api-client-react";
 import { Link } from "wouter";
-import { Beef, CheckCircle2, Baby, ClipboardList, TrendingUp } from "lucide-react";
+import {
+  Beef, CheckCircle2, Baby, ClipboardList, TrendingUp,
+  Sprout, Wheat, Warehouse, Tractor, FlaskConical,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +63,10 @@ export default function DashboardPage() {
   }
 
   const stats = dashboard ?? { totalHerd: 0, activeHead: 0, calves: 0, activeTasks: 0, recentRegistrations: [] };
+  const acresPlanted = dashboard?.acresPlanted ?? 0;
+  const expectedYield = dashboard?.expectedYield ?? 0;
+  const storedGrain = dashboard?.storedGrain ?? 0;
+  const equipmentNeedingService = dashboard?.equipmentNeedingService ?? 0;
 
   return (
     <div className="p-6 space-y-6 max-w-5xl">
@@ -73,6 +80,16 @@ export default function DashboardPage() {
         <StatCard title="Active Head" value={stats.activeHead} icon={CheckCircle2} borderColor="border-blue-500" subtitle="Currently active" />
         <StatCard title="Calves (<1yr)" value={stats.calves} icon={Baby} borderColor="border-teal-500" subtitle="Under one year" />
         <StatCard title="Active Tasks" value={stats.activeTasks} icon={ClipboardList} borderColor="border-orange-500" subtitle={stats.activeTasks > 0 ? "Action needed" : "All clear"} />
+      </div>
+
+      <div>
+        <h2 className="text-sm font-semibold text-foreground mb-3">Grain Operations</h2>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <StatCard title="Acres Planted" value={acresPlanted} icon={Sprout} borderColor="border-green-600" subtitle="Active plantings" />
+          <StatCard title="Expected Yield" value={expectedYield} icon={Wheat} borderColor="border-amber-500" subtitle="From active crops" />
+          <StatCard title="Stored Grain" value={storedGrain} icon={Warehouse} borderColor="border-emerald-500" subtitle="Across all bins" />
+          <StatCard title="Needs Service" value={equipmentNeedingService} icon={Tractor} borderColor="border-red-500" subtitle={equipmentNeedingService > 0 ? "Equipment down" : "All operational"} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -136,6 +153,18 @@ export default function DashboardPage() {
               <Button variant="outline" className="w-full justify-start" data-testid="button-field-management">
                 <TrendingUp size={15} className="mr-2" />
                 Field Management
+              </Button>
+            </Link>
+            <Link href="/crops">
+              <Button variant="outline" className="w-full justify-start" data-testid="button-crops">
+                <Sprout size={15} className="mr-2" />
+                Crops
+              </Button>
+            </Link>
+            <Link href="/inputs">
+              <Button variant="outline" className="w-full justify-start" data-testid="button-inputs">
+                <FlaskConical size={15} className="mr-2" />
+                Inputs
               </Button>
             </Link>
           </CardContent>

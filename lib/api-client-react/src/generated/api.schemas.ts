@@ -84,6 +84,14 @@ export interface DashboardData {
   herdChange?: number | null;
   /** @nullable */
   tasksTrend?: string | null;
+  /** @nullable */
+  acresPlanted?: number | null;
+  /** @nullable */
+  expectedYield?: number | null;
+  /** @nullable */
+  storedGrain?: number | null;
+  /** @nullable */
+  equipmentNeedingService?: number | null;
 }
 
 export interface CattleDetail {
@@ -418,6 +426,394 @@ export interface ClockInInput {
 }
 
 export interface ClockOutInput {
+  notes?: string;
+}
+
+export type CropStatus = typeof CropStatus[keyof typeof CropStatus];
+
+
+export const CropStatus = {
+  planned: 'planned',
+  planted: 'planted',
+  growing: 'growing',
+  harvested: 'harvested',
+} as const;
+
+export interface Crop {
+  id: number;
+  /** @nullable */
+  fieldId?: number | null;
+  cropType: string;
+  /** @nullable */
+  variety?: string | null;
+  /** @nullable */
+  season?: string | null;
+  /** @nullable */
+  plantingDate?: string | null;
+  /** @nullable */
+  harvestDate?: string | null;
+  /** @nullable */
+  acreage?: number | null;
+  /** @nullable */
+  expectedYield?: number | null;
+  /** @nullable */
+  actualYield?: number | null;
+  yieldUnit: string;
+  status: CropStatus;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export type CropInputStatus = typeof CropInputStatus[keyof typeof CropInputStatus];
+
+
+export const CropInputStatus = {
+  planned: 'planned',
+  planted: 'planted',
+  growing: 'growing',
+  harvested: 'harvested',
+} as const;
+
+export interface CropInput {
+  fieldId?: number;
+  cropType: string;
+  variety?: string;
+  season?: string;
+  plantingDate?: string;
+  harvestDate?: string;
+  acreage?: number;
+  expectedYield?: number;
+  actualYield?: number;
+  yieldUnit?: string;
+  status?: CropInputStatus;
+  notes?: string;
+}
+
+export type CropUpdateStatus = typeof CropUpdateStatus[keyof typeof CropUpdateStatus];
+
+
+export const CropUpdateStatus = {
+  planned: 'planned',
+  planted: 'planted',
+  growing: 'growing',
+  harvested: 'harvested',
+} as const;
+
+export interface CropUpdate {
+  /** @nullable */
+  fieldId?: number | null;
+  cropType?: string;
+  /** @nullable */
+  variety?: string | null;
+  /** @nullable */
+  season?: string | null;
+  /** @nullable */
+  plantingDate?: string | null;
+  /** @nullable */
+  harvestDate?: string | null;
+  /** @nullable */
+  acreage?: number | null;
+  /** @nullable */
+  expectedYield?: number | null;
+  /** @nullable */
+  actualYield?: number | null;
+  yieldUnit?: string;
+  status?: CropUpdateStatus;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export type StorageBinStatus = typeof StorageBinStatus[keyof typeof StorageBinStatus];
+
+
+export const StorageBinStatus = {
+  active: 'active',
+  maintenance: 'maintenance',
+  empty: 'empty',
+} as const;
+
+export interface StorageBin {
+  id: number;
+  name: string;
+  /** @nullable */
+  grainType?: string | null;
+  /** @nullable */
+  capacity?: number | null;
+  currentQuantity: number;
+  /** @nullable */
+  moisture?: number | null;
+  /** @nullable */
+  location?: string | null;
+  status: StorageBinStatus;
+  createdAt: string;
+}
+
+export type StorageBinInputStatus = typeof StorageBinInputStatus[keyof typeof StorageBinInputStatus];
+
+
+export const StorageBinInputStatus = {
+  active: 'active',
+  maintenance: 'maintenance',
+  empty: 'empty',
+} as const;
+
+export interface StorageBinInput {
+  name: string;
+  grainType?: string;
+  capacity?: number;
+  currentQuantity?: number;
+  moisture?: number;
+  location?: string;
+  status?: StorageBinInputStatus;
+}
+
+export type StorageBinUpdateStatus = typeof StorageBinUpdateStatus[keyof typeof StorageBinUpdateStatus];
+
+
+export const StorageBinUpdateStatus = {
+  active: 'active',
+  maintenance: 'maintenance',
+  empty: 'empty',
+} as const;
+
+export interface StorageBinUpdate {
+  name?: string;
+  /** @nullable */
+  grainType?: string | null;
+  /** @nullable */
+  capacity?: number | null;
+  currentQuantity?: number;
+  /** @nullable */
+  moisture?: number | null;
+  /** @nullable */
+  location?: string | null;
+  status?: StorageBinUpdateStatus;
+}
+
+export type EquipmentType = typeof EquipmentType[keyof typeof EquipmentType];
+
+
+export const EquipmentType = {
+  tractor: 'tractor',
+  combine: 'combine',
+  planter: 'planter',
+  sprayer: 'sprayer',
+  truck: 'truck',
+  other: 'other',
+} as const;
+
+export type EquipmentStatus = typeof EquipmentStatus[keyof typeof EquipmentStatus];
+
+
+export const EquipmentStatus = {
+  operational: 'operational',
+  maintenance: 'maintenance',
+  repair: 'repair',
+  retired: 'retired',
+} as const;
+
+export interface Equipment {
+  id: number;
+  name: string;
+  type: EquipmentType;
+  /** @nullable */
+  make?: string | null;
+  /** @nullable */
+  model?: string | null;
+  /** @nullable */
+  year?: number | null;
+  status: EquipmentStatus;
+  /** @nullable */
+  hoursUsed?: number | null;
+  /** @nullable */
+  purchaseDate?: string | null;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export type EquipmentInputType = typeof EquipmentInputType[keyof typeof EquipmentInputType];
+
+
+export const EquipmentInputType = {
+  tractor: 'tractor',
+  combine: 'combine',
+  planter: 'planter',
+  sprayer: 'sprayer',
+  truck: 'truck',
+  other: 'other',
+} as const;
+
+export type EquipmentInputStatus = typeof EquipmentInputStatus[keyof typeof EquipmentInputStatus];
+
+
+export const EquipmentInputStatus = {
+  operational: 'operational',
+  maintenance: 'maintenance',
+  repair: 'repair',
+  retired: 'retired',
+} as const;
+
+export interface EquipmentInput {
+  name: string;
+  type: EquipmentInputType;
+  make?: string;
+  model?: string;
+  year?: number;
+  status?: EquipmentInputStatus;
+  hoursUsed?: number;
+  purchaseDate?: string;
+  notes?: string;
+}
+
+export type EquipmentUpdateType = typeof EquipmentUpdateType[keyof typeof EquipmentUpdateType];
+
+
+export const EquipmentUpdateType = {
+  tractor: 'tractor',
+  combine: 'combine',
+  planter: 'planter',
+  sprayer: 'sprayer',
+  truck: 'truck',
+  other: 'other',
+} as const;
+
+export type EquipmentUpdateStatus = typeof EquipmentUpdateStatus[keyof typeof EquipmentUpdateStatus];
+
+
+export const EquipmentUpdateStatus = {
+  operational: 'operational',
+  maintenance: 'maintenance',
+  repair: 'repair',
+  retired: 'retired',
+} as const;
+
+export interface EquipmentUpdate {
+  name?: string;
+  type?: EquipmentUpdateType;
+  /** @nullable */
+  make?: string | null;
+  /** @nullable */
+  model?: string | null;
+  /** @nullable */
+  year?: number | null;
+  status?: EquipmentUpdateStatus;
+  /** @nullable */
+  hoursUsed?: number | null;
+  /** @nullable */
+  purchaseDate?: string | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface MaintenanceLog {
+  id: number;
+  equipmentId: number;
+  date: string;
+  type: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  cost?: number | null;
+  /** @nullable */
+  hoursAtService?: number | null;
+}
+
+export interface MaintenanceLogInput {
+  date: string;
+  type: string;
+  description?: string;
+  cost?: number;
+  hoursAtService?: number;
+}
+
+export type InputCategory = typeof InputCategory[keyof typeof InputCategory];
+
+
+export const InputCategory = {
+  seed: 'seed',
+  fertilizer: 'fertilizer',
+  chemical: 'chemical',
+  other: 'other',
+} as const;
+
+export interface Input {
+  id: number;
+  name: string;
+  category: InputCategory;
+  unit: string;
+  quantityOnHand: number;
+  /** @nullable */
+  costPerUnit?: number | null;
+  /** @nullable */
+  supplier?: string | null;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export type InputInputCategory = typeof InputInputCategory[keyof typeof InputInputCategory];
+
+
+export const InputInputCategory = {
+  seed: 'seed',
+  fertilizer: 'fertilizer',
+  chemical: 'chemical',
+  other: 'other',
+} as const;
+
+export interface InputInput {
+  name: string;
+  category: InputInputCategory;
+  unit?: string;
+  quantityOnHand?: number;
+  costPerUnit?: number;
+  supplier?: string;
+  notes?: string;
+}
+
+export type InputUpdateCategory = typeof InputUpdateCategory[keyof typeof InputUpdateCategory];
+
+
+export const InputUpdateCategory = {
+  seed: 'seed',
+  fertilizer: 'fertilizer',
+  chemical: 'chemical',
+  other: 'other',
+} as const;
+
+export interface InputUpdate {
+  name?: string;
+  category?: InputUpdateCategory;
+  unit?: string;
+  quantityOnHand?: number;
+  /** @nullable */
+  costPerUnit?: number | null;
+  /** @nullable */
+  supplier?: string | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface InputApplication {
+  id: number;
+  inputId: number;
+  /** @nullable */
+  cropId?: number | null;
+  date: string;
+  quantity: number;
+  /** @nullable */
+  cost?: number | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface InputApplicationInput {
+  cropId?: number;
+  date: string;
+  quantity: number;
+  cost?: number;
   notes?: string;
 }
 

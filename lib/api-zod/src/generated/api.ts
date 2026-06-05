@@ -70,7 +70,11 @@ export const GetDashboardResponse = zod.object({
   "createdAt": zod.string()
 })),
   "herdChange": zod.number().nullish(),
-  "tasksTrend": zod.string().nullish()
+  "tasksTrend": zod.string().nullish(),
+  "acresPlanted": zod.number().nullish(),
+  "expectedYield": zod.number().nullish(),
+  "storedGrain": zod.number().nullish(),
+  "equipmentNeedingService": zod.number().nullish()
 })
 
 
@@ -423,6 +427,396 @@ export const UpdateFieldResponse = zod.object({
  * @summary Delete field
  */
 export const DeleteFieldParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all crop plantings
+ */
+export const ListCropsResponseItem = zod.object({
+  "id": zod.number(),
+  "fieldId": zod.number().nullish(),
+  "cropType": zod.string(),
+  "variety": zod.string().nullish(),
+  "season": zod.string().nullish(),
+  "plantingDate": zod.string().nullish(),
+  "harvestDate": zod.string().nullish(),
+  "acreage": zod.number().nullish(),
+  "expectedYield": zod.number().nullish(),
+  "actualYield": zod.number().nullish(),
+  "yieldUnit": zod.string(),
+  "status": zod.enum(['planned', 'planted', 'growing', 'harvested']),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const ListCropsResponse = zod.array(ListCropsResponseItem)
+
+
+/**
+ * @summary Add a crop planting
+ */
+export const CreateCropBody = zod.object({
+  "fieldId": zod.number().optional(),
+  "cropType": zod.string(),
+  "variety": zod.string().optional(),
+  "season": zod.string().optional(),
+  "plantingDate": zod.string().optional(),
+  "harvestDate": zod.string().optional(),
+  "acreage": zod.number().optional(),
+  "expectedYield": zod.number().optional(),
+  "actualYield": zod.number().optional(),
+  "yieldUnit": zod.string().optional(),
+  "status": zod.enum(['planned', 'planted', 'growing', 'harvested']).optional(),
+  "notes": zod.string().optional()
+})
+
+
+/**
+ * @summary Update crop planting
+ */
+export const UpdateCropParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateCropBody = zod.object({
+  "fieldId": zod.number().nullish(),
+  "cropType": zod.string().optional(),
+  "variety": zod.string().nullish(),
+  "season": zod.string().nullish(),
+  "plantingDate": zod.string().nullish(),
+  "harvestDate": zod.string().nullish(),
+  "acreage": zod.number().nullish(),
+  "expectedYield": zod.number().nullish(),
+  "actualYield": zod.number().nullish(),
+  "yieldUnit": zod.string().optional(),
+  "status": zod.enum(['planned', 'planted', 'growing', 'harvested']).optional(),
+  "notes": zod.string().nullish()
+})
+
+export const UpdateCropResponse = zod.object({
+  "id": zod.number(),
+  "fieldId": zod.number().nullish(),
+  "cropType": zod.string(),
+  "variety": zod.string().nullish(),
+  "season": zod.string().nullish(),
+  "plantingDate": zod.string().nullish(),
+  "harvestDate": zod.string().nullish(),
+  "acreage": zod.number().nullish(),
+  "expectedYield": zod.number().nullish(),
+  "actualYield": zod.number().nullish(),
+  "yieldUnit": zod.string(),
+  "status": zod.enum(['planned', 'planted', 'growing', 'harvested']),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete crop planting
+ */
+export const DeleteCropParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all storage bins
+ */
+export const ListStorageBinsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "grainType": zod.string().nullish(),
+  "capacity": zod.number().nullish(),
+  "currentQuantity": zod.number(),
+  "moisture": zod.number().nullish(),
+  "location": zod.string().nullish(),
+  "status": zod.enum(['active', 'maintenance', 'empty']),
+  "createdAt": zod.string()
+})
+export const ListStorageBinsResponse = zod.array(ListStorageBinsResponseItem)
+
+
+/**
+ * @summary Add a storage bin
+ */
+export const CreateStorageBinBody = zod.object({
+  "name": zod.string(),
+  "grainType": zod.string().optional(),
+  "capacity": zod.number().optional(),
+  "currentQuantity": zod.number().optional(),
+  "moisture": zod.number().optional(),
+  "location": zod.string().optional(),
+  "status": zod.enum(['active', 'maintenance', 'empty']).optional()
+})
+
+
+/**
+ * @summary Update storage bin
+ */
+export const UpdateStorageBinParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateStorageBinBody = zod.object({
+  "name": zod.string().optional(),
+  "grainType": zod.string().nullish(),
+  "capacity": zod.number().nullish(),
+  "currentQuantity": zod.number().optional(),
+  "moisture": zod.number().nullish(),
+  "location": zod.string().nullish(),
+  "status": zod.enum(['active', 'maintenance', 'empty']).optional()
+})
+
+export const UpdateStorageBinResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "grainType": zod.string().nullish(),
+  "capacity": zod.number().nullish(),
+  "currentQuantity": zod.number(),
+  "moisture": zod.number().nullish(),
+  "location": zod.string().nullish(),
+  "status": zod.enum(['active', 'maintenance', 'empty']),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete storage bin
+ */
+export const DeleteStorageBinParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all equipment
+ */
+export const ListEquipmentResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "type": zod.enum(['tractor', 'combine', 'planter', 'sprayer', 'truck', 'other']),
+  "make": zod.string().nullish(),
+  "model": zod.string().nullish(),
+  "year": zod.number().nullish(),
+  "status": zod.enum(['operational', 'maintenance', 'repair', 'retired']),
+  "hoursUsed": zod.number().nullish(),
+  "purchaseDate": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const ListEquipmentResponse = zod.array(ListEquipmentResponseItem)
+
+
+/**
+ * @summary Add equipment
+ */
+export const CreateEquipmentBody = zod.object({
+  "name": zod.string(),
+  "type": zod.enum(['tractor', 'combine', 'planter', 'sprayer', 'truck', 'other']),
+  "make": zod.string().optional(),
+  "model": zod.string().optional(),
+  "year": zod.number().optional(),
+  "status": zod.enum(['operational', 'maintenance', 'repair', 'retired']).optional(),
+  "hoursUsed": zod.number().optional(),
+  "purchaseDate": zod.string().optional(),
+  "notes": zod.string().optional()
+})
+
+
+/**
+ * @summary Update equipment
+ */
+export const UpdateEquipmentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateEquipmentBody = zod.object({
+  "name": zod.string().optional(),
+  "type": zod.enum(['tractor', 'combine', 'planter', 'sprayer', 'truck', 'other']).optional(),
+  "make": zod.string().nullish(),
+  "model": zod.string().nullish(),
+  "year": zod.number().nullish(),
+  "status": zod.enum(['operational', 'maintenance', 'repair', 'retired']).optional(),
+  "hoursUsed": zod.number().nullish(),
+  "purchaseDate": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+export const UpdateEquipmentResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "type": zod.enum(['tractor', 'combine', 'planter', 'sprayer', 'truck', 'other']),
+  "make": zod.string().nullish(),
+  "model": zod.string().nullish(),
+  "year": zod.number().nullish(),
+  "status": zod.enum(['operational', 'maintenance', 'repair', 'retired']),
+  "hoursUsed": zod.number().nullish(),
+  "purchaseDate": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete equipment
+ */
+export const DeleteEquipmentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List maintenance logs for equipment
+ */
+export const ListMaintenanceLogsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListMaintenanceLogsResponseItem = zod.object({
+  "id": zod.number(),
+  "equipmentId": zod.number(),
+  "date": zod.string(),
+  "type": zod.string(),
+  "description": zod.string().nullish(),
+  "cost": zod.number().nullish(),
+  "hoursAtService": zod.number().nullish()
+})
+export const ListMaintenanceLogsResponse = zod.array(ListMaintenanceLogsResponseItem)
+
+
+/**
+ * @summary Add a maintenance log
+ */
+export const AddMaintenanceLogParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AddMaintenanceLogBody = zod.object({
+  "date": zod.string(),
+  "type": zod.string(),
+  "description": zod.string().optional(),
+  "cost": zod.number().optional(),
+  "hoursAtService": zod.number().optional()
+})
+
+
+/**
+ * @summary Delete maintenance log
+ */
+export const DeleteMaintenanceLogParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all inputs (seed/fertilizer/chemical)
+ */
+export const ListInputsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "category": zod.enum(['seed', 'fertilizer', 'chemical', 'other']),
+  "unit": zod.string(),
+  "quantityOnHand": zod.number(),
+  "costPerUnit": zod.number().nullish(),
+  "supplier": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const ListInputsResponse = zod.array(ListInputsResponseItem)
+
+
+/**
+ * @summary Add an input
+ */
+export const CreateInputBody = zod.object({
+  "name": zod.string(),
+  "category": zod.enum(['seed', 'fertilizer', 'chemical', 'other']),
+  "unit": zod.string().optional(),
+  "quantityOnHand": zod.number().optional(),
+  "costPerUnit": zod.number().optional(),
+  "supplier": zod.string().optional(),
+  "notes": zod.string().optional()
+})
+
+
+/**
+ * @summary Update input
+ */
+export const UpdateInputParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateInputBody = zod.object({
+  "name": zod.string().optional(),
+  "category": zod.enum(['seed', 'fertilizer', 'chemical', 'other']).optional(),
+  "unit": zod.string().optional(),
+  "quantityOnHand": zod.number().optional(),
+  "costPerUnit": zod.number().nullish(),
+  "supplier": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+export const UpdateInputResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "category": zod.enum(['seed', 'fertilizer', 'chemical', 'other']),
+  "unit": zod.string(),
+  "quantityOnHand": zod.number(),
+  "costPerUnit": zod.number().nullish(),
+  "supplier": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete input
+ */
+export const DeleteInputParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List application records for an input
+ */
+export const ListInputApplicationsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListInputApplicationsResponseItem = zod.object({
+  "id": zod.number(),
+  "inputId": zod.number(),
+  "cropId": zod.number().nullish(),
+  "date": zod.string(),
+  "quantity": zod.number(),
+  "cost": zod.number().nullish(),
+  "notes": zod.string().nullish()
+})
+export const ListInputApplicationsResponse = zod.array(ListInputApplicationsResponseItem)
+
+
+/**
+ * @summary Record an input application
+ */
+export const AddInputApplicationParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AddInputApplicationBody = zod.object({
+  "cropId": zod.number().optional(),
+  "date": zod.string(),
+  "quantity": zod.number(),
+  "cost": zod.number().optional(),
+  "notes": zod.string().optional()
+})
+
+
+/**
+ * @summary Delete input application
+ */
+export const DeleteInputApplicationParams = zod.object({
   "id": zod.coerce.number()
 })
 

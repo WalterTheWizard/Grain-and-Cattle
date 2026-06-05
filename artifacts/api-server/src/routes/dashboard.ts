@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
-import { db, cattleTable, tasksTable } from "@workspace/db";
-import { eq, and, count } from "drizzle-orm";
+import { db, cattleTable, tasksTable, cropsTable, storageBinsTable, equipmentTable } from "@workspace/db";
+import { eq, and } from "drizzle-orm";
 import { requireAuth } from "../middlewares/session";
 import { GetDashboardResponse } from "@workspace/api-zod";
 
@@ -29,6 +29,22 @@ router.get("/dashboard", requireAuth, async (req, res): Promise<void> => {
 
   const activeTasks = pendingTasks.length;
 
+  const crops = await db.select().from(cropsTable)
+    .where(eq(cropsTable.farmId, farmId));
+  const activeCrops = crops.filter(c => c.status !== "harvested");
+  const acresPlanted = activeCrops.reduce((sum, c) => sum + (c.acreage ?? 0), 0);
+  const expectedYield = activeCrops.reduce((sum, c) => sum + (c.expectedYield ?? 0), 0);
+
+  const bins = await db.select().from(storageBinsTable)
+    .where(eq(storageBinsTable.farmId, farmId));
+  const storedGrain = bins.reduce((sum, b) => sum + (b.currentQuantity ?? 0), 0);
+
+  const equipment = await db.select().from(equipmentTable)
+    .where(eq(equipmentTable.farmId, farmId));
+  const equipmentNeedingService = equipment.filter(
+    e => e.status === "maintenance" || e.status === "repair",
+  ).length;
+
   const recentRegistrations = activeCattle
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5)
@@ -54,6 +70,10 @@ router.get("/dashboard", requireAuth, async (req, res): Promise<void> => {
     recentRegistrations,
     herdChange: 2,
     tasksTrend: activeTasks > 0 ? "Action needed" : "All clear",
+    acresPlanted,
+    expectedYield,
+    storedGrain,
+    equipmentNeedingService,
   }));
 });
 
