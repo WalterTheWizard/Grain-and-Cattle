@@ -6,7 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export * from './accountDelete';
 export * from './authResponse';
 export * from './authResponseRole';
 export * from './cattle';
@@ -29,8 +28,6 @@ export * from './employeeLogin';
 export * from './employeeRole';
 export * from './employeeUpdate';
 export * from './employeeUpdateRole';
-export * from './farmLogin';
-export * from './farmRegistration';
 export * from './farmSettings';
 export * from './field';
 export * from './fieldInput';
@@ -46,7 +43,6 @@ export * from './listCattleStatus';
 export * from './listTasksParams';
 export * from './listTasksStatus';
 export * from './listTimeEntriesParams';
-export * from './passwordChange';
 export * from './settingsUpdate';
 export * from './task';
 export * from './taskInput';

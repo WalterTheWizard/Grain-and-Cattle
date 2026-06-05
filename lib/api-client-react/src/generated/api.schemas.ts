@@ -9,17 +9,6 @@ export interface HealthStatus {
   status: string;
 }
 
-export interface FarmRegistration {
-  farmName: string;
-  email: string;
-  password: string;
-}
-
-export interface FarmLogin {
-  email: string;
-  password: string;
-}
-
 export interface EmployeeLogin {
   farmEmail: string;
   username: string;
@@ -44,11 +33,6 @@ export interface AuthResponse {
   employeeId?: number | null;
   /** @nullable */
   employeeName?: string | null;
-}
-
-export interface PasswordChange {
-  currentPassword: string;
-  newPassword: string;
 }
 
 export type CattleGender = typeof CattleGender[keyof typeof CattleGender];
@@ -407,10 +391,6 @@ export interface SettingsUpdate {
   ownerName?: string;
   /** @nullable */
   location?: string | null;
-}
-
-export interface AccountDelete {
-  password: string;
 }
 
 export interface TimeEntry {

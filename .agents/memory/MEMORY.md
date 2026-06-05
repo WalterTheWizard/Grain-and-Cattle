@@ -1,1 +1,2 @@
-- [RanchTrack auth pattern](ranchtrack-auth.md) — in-memory Map sessions, SHA-256+salt, cookie auth; `custom-fetch.ts` must keep `credentials:"include"` for cookies to flow.
+- [RanchTrack auth pattern](ranchtrack-auth.md) — dual auth: Clerk owners (JIT-provisioned farms) + custom Map sessions for employees; `custom-fetch.ts` must keep `credentials:"include"`.
+- [Drizzle push TTY prompt](drizzle-push-tty.md) — `db run push` blocks on an interactive prompt in this env; apply schema changes via direct SQL when non-interactive.

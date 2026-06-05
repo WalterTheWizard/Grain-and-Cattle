@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRegisterFarm, useLoginFarm, useLoginEmployee, getGetMeQueryKey } from "@workspace/api-client-react";
+import { useLoginEmployee, getGetMeQueryKey } from "@workspace/api-client-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 function RanchTrackLogo() {
   return (
@@ -29,63 +32,27 @@ function RanchTrackLogo() {
 export default function LoginPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
-  const [farmEmail, setFarmEmail] = useState("");
-  const [farmPassword, setFarmPassword] = useState("");
   const [empFarmEmail, setEmpFarmEmail] = useState("");
   const [empUsername, setEmpUsername] = useState("");
   const [empPassword, setEmpPassword] = useState("");
-  const [regFarmName, setRegFarmName] = useState("");
-  const [regEmail, setRegEmail] = useState("");
-  const [regPassword, setRegPassword] = useState("");
-
-  function onAuthSuccess() {
-    queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
-  }
-
-  const loginFarm = useLoginFarm({
-    mutation: {
-      onSuccess: onAuthSuccess,
-      onError: (e: unknown) => {
-        const msg = (e as { data?: { error?: string } })?.data?.error || "Invalid credentials";
-        toast({ title: msg, variant: "destructive" });
-      },
-    },
-  });
 
   const loginEmployee = useLoginEmployee({
     mutation: {
-      onSuccess: onAuthSuccess,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
+      },
       onError: (e: unknown) => {
         const msg = (e as { data?: { error?: string } })?.data?.error || "Invalid credentials";
         toast({ title: msg, variant: "destructive" });
       },
     },
   });
-
-  const registerFarm = useRegisterFarm({
-    mutation: {
-      onSuccess: onAuthSuccess,
-      onError: (e: unknown) => {
-        const msg = (e as { data?: { error?: string } })?.data?.error || "Registration failed";
-        toast({ title: msg, variant: "destructive" });
-      },
-    },
-  });
-
-  function handleFarmLogin(e: React.FormEvent) {
-    e.preventDefault();
-    loginFarm.mutate({ data: { email: farmEmail, password: farmPassword } });
-  }
 
   function handleEmployeeLogin(e: React.FormEvent) {
     e.preventDefault();
     loginEmployee.mutate({ data: { farmEmail: empFarmEmail, username: empUsername, password: empPassword } });
-  }
-
-  function handleRegister(e: React.FormEvent) {
-    e.preventDefault();
-    registerFarm.mutate({ data: { farmName: regFarmName, email: regEmail, password: regPassword } });
   }
 
   return (
@@ -104,50 +71,34 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="farm">
-              <TabsList className="grid grid-cols-3 w-full mb-4">
-                <TabsTrigger value="farm" data-testid="tab-farm-login">Farm Login</TabsTrigger>
+              <TabsList className="grid grid-cols-2 w-full mb-4">
+                <TabsTrigger value="farm" data-testid="tab-farm-login">Farm Owner</TabsTrigger>
                 <TabsTrigger value="employee" data-testid="tab-employee">Employee</TabsTrigger>
-                <TabsTrigger value="register" data-testid="tab-register">Register</TabsTrigger>
               </TabsList>
 
               <TabsContent value="farm">
-                <form onSubmit={handleFarmLogin} className="space-y-3">
-                  <div>
-                    <Label htmlFor="farm-email">Email</Label>
-                    <Input
-                      id="farm-email"
-                      type="email"
-                      placeholder="ranch@example.com"
-                      value={farmEmail}
-                      onChange={(e) => setFarmEmail(e.target.value)}
-                      required
-                      data-testid="input-farm-email"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="farm-password">Password</Label>
-                    <Input
-                      id="farm-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={farmPassword}
-                      onChange={(e) => setFarmPassword(e.target.value)}
-                      required
-                      data-testid="input-farm-password"
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={loginFarm.isPending}
-                    data-testid="button-farm-login"
-                  >
-                    {loginFarm.isPending ? "Signing in..." : "Login"}
-                  </Button>
-                  <p className="text-xs text-muted-foreground text-center">
-                    New farm? Use the Register tab
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Sign in with Google or your email to access your ranch.
                   </p>
-                </form>
+                  <Button
+                    type="button"
+                    className="w-full"
+                    onClick={() => setLocation("/sign-in")}
+                    data-testid="button-farm-signin"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setLocation("/sign-up")}
+                    data-testid="button-farm-register"
+                  >
+                    Register a New Farm
+                  </Button>
+                </div>
               </TabsContent>
 
               <TabsContent value="employee">
@@ -194,54 +145,6 @@ export default function LoginPage() {
                     data-testid="button-employee-login"
                   >
                     {loginEmployee.isPending ? "Signing in..." : "Login As Employee"}
-                  </Button>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="register">
-                <form onSubmit={handleRegister} className="space-y-3">
-                  <div>
-                    <Label htmlFor="reg-farm-name">Farm Name</Label>
-                    <Input
-                      id="reg-farm-name"
-                      placeholder="My Ranch"
-                      value={regFarmName}
-                      onChange={(e) => setRegFarmName(e.target.value)}
-                      required
-                      data-testid="input-reg-farm-name"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="reg-email">Email</Label>
-                    <Input
-                      id="reg-email"
-                      type="email"
-                      placeholder="ranch@example.com"
-                      value={regEmail}
-                      onChange={(e) => setRegEmail(e.target.value)}
-                      required
-                      data-testid="input-reg-email"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="reg-password">Password</Label>
-                    <Input
-                      id="reg-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={regPassword}
-                      onChange={(e) => setRegPassword(e.target.value)}
-                      required
-                      data-testid="input-reg-password"
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={registerFarm.isPending}
-                    data-testid="button-register"
-                  >
-                    {registerFarm.isPending ? "Registering..." : "Register Farm"}
                   </Button>
                 </form>
               </TabsContent>

@@ -1,23 +1,17 @@
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
+import { useClerk } from "@clerk/react";
 import { useLogout, getGetMeQueryKey, type AuthResponse } from "@workspace/api-client-react";
 import {
-  LayoutDashboard, Beef, ClipboardList, Map, Users, Settings, LogOut, KeyRound, Clock,
+  LayoutDashboard, Beef, ClipboardList, Map, Users, Settings, LogOut, Clock,
 } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useChangePassword } from "@workspace/api-client-react";
-import { useToast } from "@/hooks/use-toast";
 
 interface LayoutProps {
   user: AuthResponse;
   children: React.ReactNode;
 }
+
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -50,10 +44,7 @@ function RanchTrackLogo() {
 export default function Layout({ user, children }: LayoutProps) {
   const [location] = useLocation();
   const queryClient = useQueryClient();
-  const { toast } = useToast();
-  const [showChangePassword, setShowChangePassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const { signOut } = useClerk();
 
   const logout = useLogout({
     mutation: {
@@ -64,27 +55,14 @@ export default function Layout({ user, children }: LayoutProps) {
     },
   });
 
-  const changePassword = useChangePassword({
-    mutation: {
-      onSuccess: () => {
-        toast({ title: "Password changed successfully" });
-        setShowChangePassword(false);
-        setCurrentPassword("");
-        setNewPassword("");
-      },
-      onError: () => {
-        toast({ title: "Incorrect current password", variant: "destructive" });
-      },
-    },
-  });
-
   function handleLogout() {
-    logout.mutate(undefined as never);
-  }
-
-  function handleChangePassword() {
-    if (!currentPassword || !newPassword) return;
-    changePassword.mutate({ data: { currentPassword, newPassword } });
+    if (user.role === "owner") {
+      // Farm owners are authenticated via Clerk.
+      void signOut({ redirectUrl: basePath || "/" });
+    } else {
+      // Employees use the custom session.
+      logout.mutate(undefined as never);
+    }
   }
 
   return (
@@ -133,16 +111,6 @@ export default function Layout({ user, children }: LayoutProps) {
             )}
           </div>
           <div className="flex flex-col gap-1">
-            {user.role === "owner" && (
-              <button
-                onClick={() => setShowChangePassword(true)}
-                data-testid="button-change-password"
-                className="flex items-center gap-1.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <KeyRound size={11} />
-                Change Password
-              </button>
-            )}
             <button
               onClick={handleLogout}
               data-testid="button-sign-out"
@@ -158,42 +126,6 @@ export default function Layout({ user, children }: LayoutProps) {
       <main className="flex-1 overflow-y-auto">
         {children}
       </main>
-
-      <Dialog open={showChangePassword} onOpenChange={setShowChangePassword}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Change Password</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="current-password">Current Password</Label>
-              <Input
-                id="current-password"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                data-testid="input-current-password"
-              />
-            </div>
-            <div>
-              <Label htmlFor="new-password">New Password</Label>
-              <Input
-                id="new-password"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                data-testid="input-new-password"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowChangePassword(false)}>Cancel</Button>
-            <Button onClick={handleChangePassword} disabled={changePassword.isPending} data-testid="button-confirm-change-password">
-              {changePassword.isPending ? "Saving..." : "Change Password"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

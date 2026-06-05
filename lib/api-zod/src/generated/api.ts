@@ -17,34 +17,6 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
- * @summary Register a new farm account
- */
-export const RegisterFarmBody = zod.object({
-  "farmName": zod.string(),
-  "email": zod.string(),
-  "password": zod.string()
-})
-
-
-/**
- * @summary Login as farm owner
- */
-export const LoginFarmBody = zod.object({
-  "email": zod.string(),
-  "password": zod.string()
-})
-
-export const LoginFarmResponse = zod.object({
-  "farmId": zod.number(),
-  "farmName": zod.string(),
-  "email": zod.string(),
-  "role": zod.enum(['owner', 'employer', 'employee']),
-  "employeeId": zod.number().nullish(),
-  "employeeName": zod.string().nullish()
-})
-
-
-/**
  * @summary Login as employee/employer
  */
 export const LoginEmployeeBody = zod.object({
@@ -73,15 +45,6 @@ export const GetMeResponse = zod.object({
   "role": zod.enum(['owner', 'employer', 'employee']),
   "employeeId": zod.number().nullish(),
   "employeeName": zod.string().nullish()
-})
-
-
-/**
- * @summary Change farm account password
- */
-export const ChangePasswordBody = zod.object({
-  "currentPassword": zod.string(),
-  "newPassword": zod.string()
 })
 
 
@@ -552,14 +515,6 @@ export const UpdateSettingsResponse = zod.object({
   "ownerName": zod.string(),
   "email": zod.string(),
   "location": zod.string().nullish()
-})
-
-
-/**
- * @summary Delete farm account and all data
- */
-export const DeleteAccountBody = zod.object({
-  "password": zod.string()
 })
 
 

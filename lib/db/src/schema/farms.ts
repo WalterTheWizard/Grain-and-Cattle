@@ -7,7 +7,8 @@ export const farmsTable = pgTable("farms", {
   name: text("name").notNull(),
   ownerName: text("owner_name").notNull().default("Rancher"),
   email: text("email").notNull().unique(),
-  passwordHash: text("password_hash").notNull(),
+  passwordHash: text("password_hash"),
+  clerkUserId: text("clerk_user_id").unique(),
   location: text("location"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

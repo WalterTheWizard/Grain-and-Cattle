@@ -1,21 +1,16 @@
 import { Router, type IRouter } from "express";
-import crypto from "crypto";
+import { clerkClient } from "@clerk/express";
 import { db, farmsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { sessions } from "../lib/sessions";
 import { requireAuth } from "../middlewares/session";
 import {
   UpdateSettingsBody,
-  DeleteAccountBody,
   GetSettingsResponse,
   UpdateSettingsResponse,
 } from "@workspace/api-zod";
 
 const router: IRouter = Router();
-
-function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password + "ranchtrack_salt_2024").digest("hex");
-}
 
 router.get("/settings", requireAuth, async (req, res): Promise<void> => {
   const session = res.locals.session;
@@ -78,16 +73,25 @@ router.patch("/settings", requireAuth, async (req, res): Promise<void> => {
 
 router.delete("/settings/account", requireAuth, async (req, res): Promise<void> => {
   const session = res.locals.session;
-  const parsed = DeleteAccountBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+
+  // Only the farm owner (Clerk-authenticated) may delete the account.
+  if (session.role !== "owner") {
+    res.status(403).json({ error: "Only the farm owner can delete the account" });
     return;
   }
 
-  const [farm] = await db.select().from(farmsTable).where(eq(farmsTable.id, session.farmId));
-  if (!farm || farm.passwordHash !== hashPassword(parsed.data.password)) {
-    res.status(400).json({ error: "Incorrect password" });
-    return;
+  // Remove the Clerk identity FIRST so we never orphan a farm whose owner can
+  // still sign in (which would re-provision a fresh, empty farm). If Clerk
+  // deletion fails, abort before touching the database.
+  const clerkUserId = res.locals.clerkUserId as string | undefined;
+  if (clerkUserId) {
+    try {
+      await clerkClient.users.deleteUser(clerkUserId);
+    } catch (err) {
+      req.log?.error({ err }, "Failed to delete Clerk user during account deletion");
+      res.status(500).json({ error: "Failed to delete account" });
+      return;
+    }
   }
 
   await db.delete(farmsTable).where(eq(farmsTable.id, session.farmId));

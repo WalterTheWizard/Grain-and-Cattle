@@ -20,7 +20,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AccountDelete,
   AuthResponse,
   Cattle,
   CattleDetail,
@@ -35,8 +34,6 @@ import type {
   EmployeeInput,
   EmployeeLogin,
   EmployeeUpdate,
-  FarmLogin,
-  FarmRegistration,
   FarmSettings,
   Field,
   FieldInput,
@@ -47,7 +44,6 @@ import type {
   ListCattleParams,
   ListTasksParams,
   ListTimeEntriesParams,
-  PasswordChange,
   SettingsUpdate,
   Task,
   TaskInput,
@@ -145,148 +141,6 @@ export function useHealthCheck<TData = Awaited<ReturnType<typeof healthCheck>>, 
 
 
 
-
-export const getRegisterFarmUrl = () => {
-
-
-
-
-  return `/api/auth/register`
-}
-
-/**
- * @summary Register a new farm account
- */
-export const registerFarm = async (farmRegistration: FarmRegistration, options?: RequestInit): Promise<AuthResponse> => {
-
-  return customFetch<AuthResponse>(getRegisterFarmUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      farmRegistration,)
-  }
-);}
-
-
-
-
-export const getRegisterFarmMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerFarm>>, TError,{data: BodyType<FarmRegistration>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof registerFarm>>, TError,{data: BodyType<FarmRegistration>}, TContext> => {
-
-const mutationKey = ['registerFarm'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerFarm>>, {data: BodyType<FarmRegistration>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  registerFarm(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RegisterFarmMutationResult = NonNullable<Awaited<ReturnType<typeof registerFarm>>>
-    export type RegisterFarmMutationBody = BodyType<FarmRegistration>
-    export type RegisterFarmMutationError = ErrorType<void>
-
-    /**
- * @summary Register a new farm account
- */
-export const useRegisterFarm = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerFarm>>, TError,{data: BodyType<FarmRegistration>}, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof registerFarm>>,
-        TError,
-        {data: BodyType<FarmRegistration>},
-        TContext
-      > => {
-      return useMutation(getRegisterFarmMutationOptions(options));
-    }
-
-export const getLoginFarmUrl = () => {
-
-
-
-
-  return `/api/auth/login`
-}
-
-/**
- * @summary Login as farm owner
- */
-export const loginFarm = async (farmLogin: FarmLogin, options?: RequestInit): Promise<AuthResponse> => {
-
-  return customFetch<AuthResponse>(getLoginFarmUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      farmLogin,)
-  }
-);}
-
-
-
-
-export const getLoginFarmMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof loginFarm>>, TError,{data: BodyType<FarmLogin>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof loginFarm>>, TError,{data: BodyType<FarmLogin>}, TContext> => {
-
-const mutationKey = ['loginFarm'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof loginFarm>>, {data: BodyType<FarmLogin>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  loginFarm(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type LoginFarmMutationResult = NonNullable<Awaited<ReturnType<typeof loginFarm>>>
-    export type LoginFarmMutationBody = BodyType<FarmLogin>
-    export type LoginFarmMutationError = ErrorType<void>
-
-    /**
- * @summary Login as farm owner
- */
-export const useLoginFarm = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof loginFarm>>, TError,{data: BodyType<FarmLogin>}, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof loginFarm>>,
-        TError,
-        {data: BodyType<FarmLogin>},
-        TContext
-      > => {
-      return useMutation(getLoginFarmMutationOptions(options));
-    }
 
 export const getLoginEmployeeUrl = () => {
 
@@ -505,77 +359,6 @@ export function useGetMe<TData = Awaited<ReturnType<typeof getMe>>, TError = Err
 
 
 
-
-export const getChangePasswordUrl = () => {
-
-
-
-
-  return `/api/auth/change-password`
-}
-
-/**
- * @summary Change farm account password
- */
-export const changePassword = async (passwordChange: PasswordChange, options?: RequestInit): Promise<void> => {
-
-  return customFetch<void>(getChangePasswordUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      passwordChange,)
-  }
-);}
-
-
-
-
-export const getChangePasswordMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof changePassword>>, TError,{data: BodyType<PasswordChange>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof changePassword>>, TError,{data: BodyType<PasswordChange>}, TContext> => {
-
-const mutationKey = ['changePassword'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof changePassword>>, {data: BodyType<PasswordChange>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  changePassword(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ChangePasswordMutationResult = NonNullable<Awaited<ReturnType<typeof changePassword>>>
-    export type ChangePasswordMutationBody = BodyType<PasswordChange>
-    export type ChangePasswordMutationError = ErrorType<void>
-
-    /**
- * @summary Change farm account password
- */
-export const useChangePassword = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof changePassword>>, TError,{data: BodyType<PasswordChange>}, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof changePassword>>,
-        TError,
-        {data: BodyType<PasswordChange>},
-        TContext
-      > => {
-      return useMutation(getChangePasswordMutationOptions(options));
-    }
 
 export const getGetDashboardUrl = () => {
 
@@ -2434,15 +2217,14 @@ export const getDeleteAccountUrl = () => {
 /**
  * @summary Delete farm account and all data
  */
-export const deleteAccount = async (accountDelete: AccountDelete, options?: RequestInit): Promise<void> => {
+export const deleteAccount = async ( options?: RequestInit): Promise<void> => {
 
   return customFetch<void>(getDeleteAccountUrl(),
   {
     ...options,
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      accountDelete,)
+    method: 'DELETE'
+
+
   }
 );}
 
@@ -2450,8 +2232,8 @@ export const deleteAccount = async (accountDelete: AccountDelete, options?: Requ
 
 
 export const getDeleteAccountMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{data: BodyType<AccountDelete>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{data: BodyType<AccountDelete>}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,void, TContext> => {
 
 const mutationKey = ['deleteAccount'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -2463,10 +2245,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAccount>>, {data: BodyType<AccountDelete>}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAccount>>, void> = () => {
 
-          return  deleteAccount(data,requestOptions)
+
+          return  deleteAccount(requestOptions)
         }
 
 
@@ -2477,18 +2259,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type DeleteAccountMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAccount>>>
-    export type DeleteAccountMutationBody = BodyType<AccountDelete>
+
     export type DeleteAccountMutationError = ErrorType<unknown>
 
     /**
  * @summary Delete farm account and all data
  */
 export const useDeleteAccount = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,{data: BodyType<AccountDelete>}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAccount>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof deleteAccount>>,
         TError,
-        {data: BodyType<AccountDelete>},
+        void,
         TContext
       > => {
       return useMutation(getDeleteAccountMutationOptions(options));

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useClerk } from "@clerk/react";
 import {
-  useGetSettings, useUpdateSettings, useDeleteAccount,
+  useGetSettings, useUpdateSettings, useDeleteAccount, useGetMe,
   getGetSettingsQueryKey, getGetMeQueryKey,
 } from "@workspace/api-client-react";
 import { Settings, Trash2, Info, MapPin, ExternalLink } from "lucide-react";
@@ -23,13 +24,16 @@ import { Link } from "wouter";
 export default function SettingsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { signOut } = useClerk();
 
   const [farmName, setFarmName] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [location, setLocation] = useState("");
   const [dirty, setDirty] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [deletePassword, setDeletePassword] = useState("");
+
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey(), retry: false } });
+  const isOwner = me?.role === "owner";
 
   const { data: settings, isLoading } = useGetSettings({
     query: { queryKey: getGetSettingsQueryKey() },
@@ -56,13 +60,16 @@ export default function SettingsPage() {
     },
   });
 
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+
   const deleteAccount = useDeleteAccount({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
         queryClient.clear();
+        // Owners are Clerk-authenticated — sign them out so the session is fully cleared.
+        void signOut({ redirectUrl: basePath || "/" });
       },
-      onError: () => toast({ title: "Incorrect password", variant: "destructive" }),
+      onError: () => toast({ title: "Failed to delete account", variant: "destructive" }),
     },
   });
 
@@ -77,8 +84,7 @@ export default function SettingsPage() {
   }
 
   function handleDelete() {
-    if (!deletePassword) return;
-    deleteAccount.mutate({ data: { password: deletePassword } });
+    deleteAccount.mutate();
   }
 
   function markDirty() {
@@ -189,53 +195,45 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-destructive/40">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base text-destructive flex items-center gap-2">
-            <Trash2 size={16} />
-            Danger Zone
-          </CardTitle>
-          <CardDescription>Irreversible actions — proceed with caution</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-3">
-            Deleting your farm account will permanently remove all cattle records, tasks, fields, and employees associated with your farm.
-          </p>
-          <Button
-            variant="destructive"
-            onClick={() => setShowDeleteDialog(true)}
-            data-testid="button-delete-account"
-          >
-            <Trash2 size={14} className="mr-1.5" />
-            Delete Farm Account
-          </Button>
-        </CardContent>
-      </Card>
+      {isOwner && (
+        <Card className="border-destructive/40">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base text-destructive flex items-center gap-2">
+              <Trash2 size={16} />
+              Danger Zone
+            </CardTitle>
+            <CardDescription>Irreversible actions — proceed with caution</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-3">
+              Deleting your farm account will permanently remove all cattle records, tasks, fields, and employees associated with your farm, and delete your sign-in identity.
+            </p>
+            <Button
+              variant="destructive"
+              onClick={() => setShowDeleteDialog(true)}
+              data-testid="button-delete-account"
+            >
+              <Trash2 size={14} className="mr-1.5" />
+              Delete Farm Account
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Farm Account</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete your farm and all associated data. This action cannot be undone.
-              Please enter your password to confirm.
+              This will permanently delete your farm, all associated data, and your sign-in identity. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="py-2">
-            <Label>Password</Label>
-            <Input
-              type="password"
-              value={deletePassword}
-              onChange={e => setDeletePassword(e.target.value)}
-              placeholder="Enter your password"
-              data-testid="input-delete-password"
-            />
-          </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeletePassword("")}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive hover:bg-destructive/90"
               onClick={handleDelete}
+              disabled={deleteAccount.isPending}
               data-testid="button-confirm-delete-account"
             >
               {deleteAccount.isPending ? "Deleting..." : "Delete Account"}

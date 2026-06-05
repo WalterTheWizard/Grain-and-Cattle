@@ -40,48 +40,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
 
-  /auth/register:
-    post:
-      operationId: registerFarm
-      tags: [auth]
-      summary: Register a new farm account
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/FarmRegistration"
-      responses:
-        "201":
-          description: Farm registered
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        "400":
-          description: Validation error
-
-  /auth/login:
-    post:
-      operationId: loginFarm
-      tags: [auth]
-      summary: Login as farm owner
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/FarmLogin"
-      responses:
-        "200":
-          description: Logged in
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        "401":
-          description: Invalid credentials
-
   /auth/employee-login:
     post:
       operationId: loginEmployee
@@ -126,23 +84,6 @@ paths:
                 $ref: "#/components/schemas/AuthResponse"
         "401":
           description: Not authenticated
-
-  /auth/change-password:
-    post:
-      operationId: changePassword
-      tags: [auth]
-      summary: Change farm account password
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PasswordChange"
-      responses:
-        "200":
-          description: Password changed
-        "400":
-          description: Invalid current password
 
   /dashboard:
     get:
@@ -627,12 +568,6 @@ paths:
       operationId: deleteAccount
       tags: [settings]
       summary: Delete farm account and all data
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AccountDelete"
       responses:
         "200":
           description: Account deleted
@@ -735,26 +670,6 @@ components:
           type: string
       required: [status]
 
-    FarmRegistration:
-      type: object
-      required: [farmName, email, password]
-      properties:
-        farmName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-
-    FarmLogin:
-      type: object
-      required: [email, password]
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-
     EmployeeLogin:
       type: object
       required: [farmEmail, username, password]
@@ -783,15 +698,6 @@ components:
           type: ["integer", "null"]
         employeeName:
           type: ["string", "null"]
-
-    PasswordChange:
-      type: object
-      required: [currentPassword, newPassword]
-      properties:
-        currentPassword:
-          type: string
-        newPassword:
-          type: string
 
     DashboardData:
       type: object
@@ -1186,13 +1092,6 @@ components:
           type: string
         location:
           type: ["string", "null"]
-
-    AccountDelete:
-      type: object
-      required: [password]
-      properties:
-        password:
-          type: string
 
     TimeEntry:
       type: object

@@ -1,5 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
+import { getAuth } from "@clerk/express";
 import { sessions } from "../lib/sessions";
+import { resolveOwnerSession } from "../lib/owner";
 
 export function sessionMiddleware(req: Request, res: Response, next: NextFunction): void {
   const token = req.cookies?.session;
@@ -10,10 +12,30 @@ export function sessionMiddleware(req: Request, res: Response, next: NextFunctio
   next();
 }
 
-export function requireAuth(_req: Request, res: Response, next: NextFunction): void {
-  if (!res.locals.session) {
-    res.status(401).json({ error: "Not authenticated" });
+/**
+ * Unified auth guard. Employees authenticate via the custom in-memory session
+ * cookie (resolved in sessionMiddleware). Farm owners authenticate via Clerk;
+ * their farm record is resolved (and JIT-provisioned) here.
+ */
+export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+  if (res.locals.session) {
+    next();
     return;
   }
-  next();
+
+  const auth = getAuth(req);
+  if (auth?.userId) {
+    try {
+      res.locals.session = await resolveOwnerSession(auth.userId);
+      res.locals.clerkUserId = auth.userId;
+      next();
+      return;
+    } catch (err) {
+      req.log?.error({ err }, "Failed to resolve owner session");
+      res.status(500).json({ error: "Failed to resolve account" });
+      return;
+    }
+  }
+
+  res.status(401).json({ error: "Not authenticated" });
 }
