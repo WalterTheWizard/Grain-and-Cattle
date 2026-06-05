@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLogout, getGetMeQueryKey, type AuthResponse } from "@workspace/api-client-react";
 import {
-  LayoutDashboard, Beef, ClipboardList, Map, Users, Settings, LogOut, KeyRound,
+  LayoutDashboard, Beef, ClipboardList, Map, Users, Settings, LogOut, KeyRound, Clock,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/cattle", label: "Cattle Records", icon: Beef },
   { path: "/tasks", label: "Farm Tasks", icon: ClipboardList },
+  { path: "/time-cards", label: "Time Cards", icon: Clock },
   { path: "/fields", label: "Field Management", icon: Map },
   { path: "/employees", label: "Employees", icon: Users },
   { path: "/settings", label: "Settings", icon: Settings },

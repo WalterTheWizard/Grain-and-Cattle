@@ -12,6 +12,7 @@ import TasksPage from "@/pages/TasksPage";
 import FieldsPage from "@/pages/FieldsPage";
 import EmployeesPage from "@/pages/EmployeesPage";
 import SettingsPage from "@/pages/SettingsPage";
+import TimeCardPage from "@/pages/TimeCardPage";
 import NotFound from "@/pages/not-found";
 import type { AuthResponse } from "@workspace/api-client-react";
 
@@ -46,6 +47,7 @@ function AuthenticatedApp() {
         <Route path="/tasks" component={TasksPage} />
         <Route path="/fields" component={FieldsPage} />
         <Route path="/employees" component={EmployeesPage} />
+        <Route path="/time-cards" component={TimeCardPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route component={NotFound} />
       </Switch>

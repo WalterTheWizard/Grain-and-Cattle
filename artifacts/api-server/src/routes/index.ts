@@ -7,6 +7,7 @@ import tasksRouter from "./tasks";
 import fieldsRouter from "./fields";
 import employeesRouter from "./employees";
 import settingsRouter from "./settings";
+import timeEntriesRouter from "./time-entries";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(tasksRouter);
 router.use(fieldsRouter);
 router.use(employeesRouter);
 router.use(settingsRouter);
+router.use(timeEntriesRouter);
 
 export default router;

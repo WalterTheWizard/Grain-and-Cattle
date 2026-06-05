@@ -563,3 +563,70 @@ export const DeleteAccountBody = zod.object({
 })
 
 
+/**
+ * @summary List all time entries for the farm
+ */
+export const ListTimeEntriesQueryParams = zod.object({
+  "employeeId": zod.coerce.number().optional(),
+  "startDate": zod.coerce.string().optional(),
+  "endDate": zod.coerce.string().optional()
+})
+
+export const ListTimeEntriesResponseItem = zod.object({
+  "id": zod.number(),
+  "employeeId": zod.number(),
+  "employeeName": zod.string().nullish(),
+  "clockIn": zod.string(),
+  "clockOut": zod.string().nullish(),
+  "durationMinutes": zod.number().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const ListTimeEntriesResponse = zod.array(ListTimeEntriesResponseItem)
+
+
+/**
+ * @summary Get current clock-in status for the logged-in employee
+ */
+export const GetCurrentStatusResponse = zod.object({
+  "clockedIn": zod.boolean(),
+  "entry": zod.object({
+  "id": zod.number(),
+  "employeeId": zod.number(),
+  "employeeName": zod.string().nullish(),
+  "clockIn": zod.string(),
+  "clockOut": zod.string().nullish(),
+  "durationMinutes": zod.number().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+}).optional()
+})
+
+
+/**
+ * @summary Clock in
+ */
+export const ClockInBody = zod.object({
+  "notes": zod.string().optional()
+})
+
+
+/**
+ * @summary Clock out
+ */
+export const ClockOutBody = zod.object({
+  "notes": zod.string().optional()
+})
+
+export const ClockOutResponse = zod.object({
+  "id": zod.number(),
+  "employeeId": zod.number(),
+  "employeeName": zod.string().nullish(),
+  "clockIn": zod.string(),
+  "clockOut": zod.string().nullish(),
+  "durationMinutes": zod.number().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+

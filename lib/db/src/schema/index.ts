@@ -3,3 +3,4 @@ export * from "./cattle";
 export * from "./tasks";
 export * from "./fields";
 export * from "./employees";
+export * from "./time-entries";

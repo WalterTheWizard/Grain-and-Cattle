@@ -413,6 +413,34 @@ export interface AccountDelete {
   password: string;
 }
 
+export interface TimeEntry {
+  id: number;
+  employeeId: number;
+  /** @nullable */
+  employeeName?: string | null;
+  clockIn: string;
+  /** @nullable */
+  clockOut?: string | null;
+  /** @nullable */
+  durationMinutes?: number | null;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface CurrentClockStatus {
+  clockedIn: boolean;
+  entry?: TimeEntry;
+}
+
+export interface ClockInInput {
+  notes?: string;
+}
+
+export interface ClockOutInput {
+  notes?: string;
+}
+
 export type ListCattleParams = {
 /**
  * Search by tag number or name
@@ -448,4 +476,10 @@ export const ListTasksStatus = {
   pending: 'pending',
   completed: 'completed',
 } as const;
+
+export type ListTimeEntriesParams = {
+employeeId?: number;
+startDate?: string;
+endDate?: string;
+};
 
