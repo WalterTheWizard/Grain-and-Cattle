@@ -177,43 +177,53 @@ export default function CattleDetailPage() {
     );
   }
 
-  return (
-    <div className="p-6 space-y-5 max-w-3xl">
-      <div className="flex items-center gap-3">
-        <Link href="/cattle">
-          <Button variant="ghost" size="sm" data-testid="button-back">
-            <ArrowLeft size={15} className="mr-1" />
-            Back
-          </Button>
-        </Link>
-      </div>
+  const statusAccent = cattle.status === "active"
+    ? "bg-green-500"
+    : cattle.status === "sold"
+    ? "bg-blue-400"
+    : "bg-gray-400";
 
-      <Card>
+  const statusBadgeClass = cattle.status === "active"
+    ? "bg-green-100 text-green-800 border-green-200"
+    : cattle.status === "sold"
+    ? "bg-blue-100 text-blue-800 border-blue-200"
+    : "bg-gray-100 text-gray-700 border-gray-200";
+
+  return (
+    <div className="p-4 sm:p-6 space-y-4 max-w-3xl">
+      <Link href="/cattle">
+        <Button variant="ghost" size="sm" className="-ml-2" data-testid="button-back">
+          <ArrowLeft size={15} className="mr-1" />
+          Back
+        </Button>
+      </Link>
+
+      <Card className="overflow-hidden">
+        <div className={`h-1.5 ${statusAccent}`} />
         <CardContent className="p-5">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Beef size={18} className="text-primary" />
+          {/* Identity row */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Beef size={26} className="text-primary" />
               </div>
-              {editing ? (
-                <div>
-                  <Input value={editTag} onChange={e => setEditTag(e.target.value)} className="font-mono text-lg h-8 w-32" data-testid="input-edit-tag" />
+              <div>
+                {editing ? (
+                  <Input value={editTag} onChange={e => setEditTag(e.target.value)} className="font-mono text-lg h-9 w-36 mb-1" data-testid="input-edit-tag" />
+                ) : (
+                  <h1 className="text-2xl font-bold leading-tight">Tag #{cattle.tagNumber}</h1>
+                )}
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  {cattle.name && <span className="text-sm text-muted-foreground">{cattle.name}</span>}
+                  <Badge data-testid="badge-status" className={statusBadgeClass}>
+                    {cattle.status.toUpperCase()}
+                  </Badge>
                 </div>
-              ) : (
-                <div>
-                  <h1 className="text-xl font-bold">Tag #{cattle.tagNumber}</h1>
-                  {cattle.name && <p className="text-sm text-muted-foreground">{cattle.name}</p>}
-                </div>
-              )}
-              <Badge
-                data-testid="badge-status"
-                className={cattle.status === "active" ? "bg-green-100 text-green-800 border-green-200" : ""}
-              >
-                {cattle.status.toUpperCase()}
-              </Badge>
+              </div>
             </div>
+
             {isAdmin && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {editing ? (
                   <>
                     <Button size="sm" onClick={saveEdit} disabled={updateCattle.isPending} data-testid="button-save-edit">
@@ -221,7 +231,8 @@ export default function CattleDetailPage() {
                       Save
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => setEditing(false)} data-testid="button-cancel-edit">
-                      <X size={14} />
+                      <X size={14} className="mr-1" />
+                      Cancel
                     </Button>
                   </>
                 ) : (
@@ -240,7 +251,7 @@ export default function CattleDetailPage() {
                         </Button>
                       </>
                     )}
-                    <Button size="sm" variant="destructive" onClick={() => setShowDeleteDialog(true)} data-testid="button-delete">
+                    <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setShowDeleteDialog(true)} data-testid="button-delete">
                       <Trash2 size={14} />
                     </Button>
                   </>
@@ -249,11 +260,12 @@ export default function CattleDetailPage() {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {/* Info cells */}
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { label: "Tag", value: editing ? <Input value={editTag} onChange={e => setEditTag(e.target.value)} className="h-7 text-sm" /> : `#${cattle.tagNumber}` },
               {
-                label: "Gender", value: editing ? (
+                label: "Gender",
+                value: editing ? (
                   <Select value={editGender} onValueChange={setEditGender}>
                     <SelectTrigger className="h-7 text-sm"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -263,14 +275,28 @@ export default function CattleDetailPage() {
                       <SelectItem value="steer">Steer</SelectItem>
                     </SelectContent>
                   </Select>
-                ) : cattle.gender
+                ) : <span className="capitalize">{cattle.gender}</span>,
               },
-              { label: "Breed", value: editing ? <Input value={editBreed} onChange={e => setEditBreed(e.target.value)} className="h-7 text-sm" /> : (cattle.breed || "—") },
-              { label: "Birth Date", value: editing ? <Input type="date" value={editBirthDate} onChange={e => setEditBirthDate(e.target.value)} className="h-7 text-sm" /> : (cattle.birthDate ? `${cattle.birthDate} (${calcAge(cattle.birthDate)})` : "—") },
+              {
+                label: "Breed",
+                value: editing
+                  ? <Input value={editBreed} onChange={e => setEditBreed(e.target.value)} className="h-7 text-sm" />
+                  : cattle.breed || "—",
+              },
+              {
+                label: "Birth Date",
+                value: editing
+                  ? <Input type="date" value={editBirthDate} onChange={e => setEditBirthDate(e.target.value)} className="h-7 text-sm" />
+                  : cattle.birthDate ? cattle.birthDate : "—",
+              },
+              {
+                label: "Age",
+                value: calcAge(cattle.birthDate ?? null),
+              },
             ].map(({ label, value }) => (
-              <div key={label}>
+              <div key={label} className="bg-muted/40 rounded-lg px-3 py-2.5">
                 <p className="text-xs text-muted-foreground mb-1">{label}</p>
-                <p className="text-sm font-medium">{value}</p>
+                <p className="text-sm font-semibold">{value}</p>
               </div>
             ))}
           </div>
