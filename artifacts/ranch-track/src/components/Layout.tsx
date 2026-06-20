@@ -71,7 +71,7 @@ function getNavGroups(farmType: string | null | undefined): NavGroup[] {
   return [DASHBOARD_GROUP, LIVESTOCK_GROUP, GRAIN_ONLY_GROUP, SETTINGS_GROUP];
 }
 
-function RanchTrackLogo({ size = 36 }: { size?: number }) {
+function FarmerProLogo({ size = 36 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="18" cy="18" r="18" fill="hsl(142 71% 45%)" />
@@ -106,9 +106,9 @@ function SidebarBody({
     <>
       <div className="p-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <RanchTrackLogo />
+          <FarmerProLogo />
           <div>
-            <div className="font-bold text-sm leading-tight text-foreground">RanchTrack</div>
+            <div className="font-bold text-sm leading-tight text-foreground">FarmerPro</div>
             <div className="text-[10px] text-muted-foreground leading-tight">Cattle Management</div>
           </div>
         </div>
@@ -267,8 +267,8 @@ export default function Layout({ user, children }: LayoutProps) {
           <Menu size={22} />
         </button>
         <div className="flex items-center gap-2">
-          <RanchTrackLogo size={26} />
-          <span className="font-bold text-sm text-foreground">RanchTrack</span>
+          <FarmerProLogo size={26} />
+          <span className="font-bold text-sm text-foreground">FarmerPro</span>
         </div>
       </header>
 

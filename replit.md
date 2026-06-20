@@ -1,4 +1,4 @@
-# RanchTrack
+# FarmerPro
 
 A full-stack farm management system for ranchers to track livestock (cattle, tasks, fields, employees) and grain operations (crops, storage, equipment, inputs).
 

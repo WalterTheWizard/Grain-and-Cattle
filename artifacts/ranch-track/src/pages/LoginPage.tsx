@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-function RanchTrackLogo() {
+function FarmerProLogo() {
   return (
     <svg width="48" height="48" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="18" cy="18" r="18" fill="hsl(142 71% 45%)" />
@@ -70,14 +70,14 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <RanchTrackLogo />
-          <h1 className="mt-3 text-2xl font-bold text-foreground">RanchTrack</h1>
+          <FarmerProLogo />
+          <h1 className="mt-3 text-2xl font-bold text-foreground">FarmerPro</h1>
           <p className="text-sm text-muted-foreground">Cattle Management System</p>
         </div>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Welcome to RanchTrack</CardTitle>
+            <CardTitle className="text-lg">Welcome to FarmerPro</CardTitle>
             <CardDescription>Sign in to manage your ranch</CardDescription>
           </CardHeader>
           <CardContent>

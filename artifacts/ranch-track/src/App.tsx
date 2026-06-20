@@ -191,13 +191,13 @@ function ClerkProviderWithRoutes() {
       localization={{
         signIn: {
           start: {
-            title: "Welcome back to RanchTrack",
+            title: "Welcome back to FarmerPro",
             subtitle: "Sign in to manage your ranch",
           },
         },
         signUp: {
           start: {
-            title: "Create your RanchTrack account",
+            title: "Create your FarmerPro account",
             subtitle: "Start managing your ranch today",
           },
         },
