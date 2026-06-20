@@ -75,7 +75,7 @@ export default function DashboardPage() {
         <p className="text-sm text-muted-foreground">Overview of your farm operations</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Herd" value={stats.totalHerd} icon={Beef} borderColor="border-green-500" subtitle="All registered" />
         <StatCard title="Active Head" value={stats.activeHead} icon={CheckCircle2} borderColor="border-blue-500" subtitle="Currently active" />
         <StatCard title="Calves (<1yr)" value={stats.calves} icon={Baby} borderColor="border-teal-500" subtitle="Under one year" />
@@ -84,7 +84,7 @@ export default function DashboardPage() {
 
       <div>
         <h2 className="text-sm font-semibold text-foreground mb-3">Grain Operations</h2>
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard title="Acres Planted" value={acresPlanted} icon={Sprout} borderColor="border-green-600" subtitle="Active plantings" />
           <StatCard title="Expected Yield" value={expectedYield} icon={Wheat} borderColor="border-amber-500" subtitle="From active crops" />
           <StatCard title="Stored Grain" value={storedGrain} icon={Warehouse} borderColor="border-emerald-500" subtitle="Across all bins" />
