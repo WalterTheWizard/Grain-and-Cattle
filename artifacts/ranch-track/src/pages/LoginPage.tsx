@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth, useClerk } from "@clerk/react";
-import { useLoginEmployee, getGetMeQueryKey } from "@workspace/api-client-react";
+import { useLoginEmployee, getGetMeQueryKey, setAuthTokenGetter } from "@workspace/api-client-react";
+import { Eye } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,6 +59,17 @@ export default function LoginPage() {
     loginEmployee.mutate({ data: { farmEmail: empFarmEmail, username: empUsername, password: empPassword } });
   }
 
+  async function handleDemo() {
+    const res = await fetch("/api/auth/demo");
+    if (!res.ok) {
+      toast({ title: "Demo not available", variant: "destructive" });
+      return;
+    }
+    const { token } = await res.json();
+    setAuthTokenGetter(() => token);
+    window.location.reload();
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -81,6 +93,23 @@ export default function LoginPage() {
 
               <TabsContent value="farm">
                 <div className="space-y-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dashed border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
+                    onClick={handleDemo}
+                    data-testid="button-demo"
+                  >
+                    <Eye className="mr-2 h-4 w-4" /> View Demo Farm
+                  </Button>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-muted-foreground">or sign in</span>
+                    </div>
+                  </div>
                   {isSignedIn ? (
                     <>
                       <p className="text-sm text-muted-foreground">

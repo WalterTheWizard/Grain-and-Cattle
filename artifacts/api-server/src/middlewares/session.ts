@@ -8,6 +8,16 @@ export function sessionMiddleware(req: Request, res: Response, next: NextFunctio
   if (token && sessions.has(token)) {
     res.locals.session = sessions.get(token);
     res.locals.sessionToken = token;
+    next();
+    return;
+  }
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    const bearerToken = authHeader.slice(7);
+    if (bearerToken && sessions.has(bearerToken)) {
+      res.locals.session = sessions.get(bearerToken);
+      res.locals.sessionToken = bearerToken;
+    }
   }
   next();
 }

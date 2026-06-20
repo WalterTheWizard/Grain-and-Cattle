@@ -75,6 +75,32 @@ router.post("/auth/logout", (req, res): void => {
   res.json({ ok: true });
 });
 
+router.get("/auth/demo", async (req, res): Promise<void> => {
+  const [farm] = await db.select().from(farmsTable).where(eq(farmsTable.email, "demo@ranchtrack.com"));
+  if (!farm) {
+    res.status(404).json({ error: "Demo farm not found" });
+    return;
+  }
+  const [employee] = await db.select().from(employeesTable).where(
+    and(eq(employeesTable.farmId, farm.id), eq(employeesTable.username, "jdoe"))
+  );
+  if (!employee) {
+    res.status(404).json({ error: "Demo employee not found" });
+    return;
+  }
+  const token = generateToken();
+  const role = employee.role === "employer" ? "employer" : "employee";
+  sessions.set(token, {
+    farmId: farm.id,
+    farmName: farm.name,
+    email: farm.email,
+    role: role as "employer" | "employee",
+    employeeId: employee.id,
+    employeeName: employee.fullName,
+  });
+  res.json({ token });
+});
+
 router.get("/auth/me", requireAuth, (req, res): void => {
   const session = res.locals.session;
   res.json(GetMeResponse.parse({
