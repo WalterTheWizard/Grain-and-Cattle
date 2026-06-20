@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, cattleTable, weightRecordsTable, healthRecordsTable } from "@workspace/db";
 import { eq, and, ilike, or } from "drizzle-orm";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   ListCattleQueryParams,
   CreateCattleBody,
@@ -100,7 +100,7 @@ router.get("/cattle", requireAuth, async (req, res): Promise<void> => {
   res.json(ListCattleResponse.parse(formatted));
 });
 
-router.post("/cattle", requireAuth, async (req, res): Promise<void> => {
+router.post("/cattle", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = CreateCattleBody.safeParse(req.body);
   if (!parsed.success) {
@@ -148,7 +148,7 @@ router.get("/cattle/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(GetCattleResponse.parse(detail));
 });
 
-router.patch("/cattle/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/cattle/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -181,7 +181,7 @@ router.patch("/cattle/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(UpdateCattleResponse.parse(formatCattle(updated)));
 });
 
-router.delete("/cattle/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/cattle/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -192,7 +192,7 @@ router.delete("/cattle/:id", requireAuth, async (req, res): Promise<void> => {
   res.sendStatus(204);
 });
 
-router.patch("/cattle/:id/status", requireAuth, async (req, res): Promise<void> => {
+router.patch("/cattle/:id/status", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -233,7 +233,7 @@ router.get("/cattle/:id/weights", requireAuth, async (req, res): Promise<void> =
   }))));
 });
 
-router.post("/cattle/:id/weights", requireAuth, async (req, res): Promise<void> => {
+router.post("/cattle/:id/weights", requireAdmin, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
 
@@ -278,7 +278,7 @@ router.get("/cattle/:id/health", requireAuth, async (req, res): Promise<void> =>
   }))));
 });
 
-router.post("/cattle/:id/health", requireAuth, async (req, res): Promise<void> => {
+router.post("/cattle/:id/health", requireAdmin, async (req, res): Promise<void> => {
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
 

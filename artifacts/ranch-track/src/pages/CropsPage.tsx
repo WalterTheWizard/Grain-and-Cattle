@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useListCrops, useCreateCrop, useUpdateCrop, useDeleteCrop,
-  getListCropsQueryKey, getGetDashboardQueryKey,
+  useGetMe, getListCropsQueryKey, getGetDashboardQueryKey, getGetMeQueryKey,
   type Crop, type CropInput, type CropUpdate,
 } from "@workspace/api-client-react";
 import { Plus, Sprout, Trash2, Pencil, Wheat, Maximize, TrendingUp } from "lucide-react";
@@ -39,6 +39,8 @@ function emptyForm() {
 export default function CropsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -158,10 +160,12 @@ export default function CropsPage() {
           <h1 className="text-2xl font-bold text-foreground">Crops</h1>
           <p className="text-sm text-muted-foreground">Track plantings, growth, and harvest yields</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-add-crop">
-          <Plus size={15} className="mr-1.5" />
-          Add Crop Planting
-        </Button>
+        {isAdmin && (
+          <Button onClick={openCreate} data-testid="button-add-crop">
+            <Plus size={15} className="mr-1.5" />
+            Add Crop Planting
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -218,24 +222,26 @@ export default function CropsPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      size="sm" variant="ghost"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-                      onClick={() => openEdit(crop)}
-                      data-testid={`button-edit-crop-${crop.id}`}
-                    >
-                      <Pencil size={13} />
-                    </Button>
-                    <Button
-                      size="sm" variant="ghost"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                      onClick={() => deleteCrop.mutate({ id: crop.id })}
-                      data-testid={`button-delete-crop-${crop.id}`}
-                    >
-                      <Trash2 size={13} />
-                    </Button>
-                  </div>
+                  {isAdmin && (
+                    <div className="flex items-center gap-1">
+                      <Button
+                        size="sm" variant="ghost"
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                        onClick={() => openEdit(crop)}
+                        data-testid={`button-edit-crop-${crop.id}`}
+                      >
+                        <Pencil size={13} />
+                      </Button>
+                      <Button
+                        size="sm" variant="ghost"
+                        className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                        onClick={() => deleteCrop.mutate({ id: crop.id })}
+                        data-testid={`button-delete-crop-${crop.id}`}
+                      >
+                        <Trash2 size={13} />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

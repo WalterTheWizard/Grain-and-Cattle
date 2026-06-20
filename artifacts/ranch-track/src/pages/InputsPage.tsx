@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useListInputs, useCreateInput, useUpdateInput, useDeleteInput,
-  getListInputsQueryKey,
+  useGetMe, getListInputsQueryKey,
   useListInputApplications, useAddInputApplication, useDeleteInputApplication,
-  getListInputApplicationsQueryKey, getGetDashboardQueryKey,
+  getListInputApplicationsQueryKey, getGetDashboardQueryKey, getGetMeQueryKey,
   type Input as InputItem, type InputInput, type InputUpdate, type InputApplicationInput,
 } from "@workspace/api-client-react";
 import { Plus, FlaskConical, Trash2, Pencil, Sprout, Package } from "lucide-react";
@@ -41,6 +41,8 @@ function emptyApp() {
 export default function InputsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -178,10 +180,12 @@ export default function InputsPage() {
           <h1 className="text-2xl font-bold text-foreground">Inputs</h1>
           <p className="text-sm text-muted-foreground">Manage seed, fertilizer, and chemical inventory</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-add-input">
-          <Plus size={15} className="mr-1.5" />
-          Add Input
-        </Button>
+        {isAdmin && (
+          <Button onClick={openCreate} data-testid="button-add-input">
+            <Plus size={15} className="mr-1.5" />
+            Add Input
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -239,12 +243,16 @@ export default function InputsPage() {
                     <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => { setAppFor(item); setAppForm(emptyApp()); }} data-testid={`button-applications-${item.id}`}>
                       <Sprout size={12} className="mr-1" /> Applications
                     </Button>
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={() => openEdit(item)} data-testid={`button-edit-input-${item.id}`}>
-                      <Pencil size={13} />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" onClick={() => deleteInput.mutate({ id: item.id })} data-testid={`button-delete-input-${item.id}`}>
-                      <Trash2 size={13} />
-                    </Button>
+                    {isAdmin && (
+                      <>
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={() => openEdit(item)} data-testid={`button-edit-input-${item.id}`}>
+                          <Pencil size={13} />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" onClick={() => deleteInput.mutate({ id: item.id })} data-testid={`button-delete-input-${item.id}`}>
+                          <Trash2 size={13} />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </CardContent>

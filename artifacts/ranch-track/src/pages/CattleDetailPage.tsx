@@ -4,8 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetCattle, useUpdateCattle, useDeleteCattle, useUpdateCattleStatus,
   useListWeights, useAddWeight, useListHealthRecords, useAddHealthRecord,
-  getGetCattleQueryKey, getListWeightsQueryKey, getListHealthRecordsQueryKey,
-  getListCattleQueryKey,
+  useGetMe, getGetCattleQueryKey, getListWeightsQueryKey, getListHealthRecordsQueryKey,
+  getListCattleQueryKey, getGetMeQueryKey,
 } from "@workspace/api-client-react";
 import { ArrowLeft, Edit2, Trash2, Check, X, Weight, Heart, Beef } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,9 @@ export default function CattleDetailPage() {
   const [healthDesc, setHealthDesc] = useState("");
   const [healthDate, setHealthDate] = useState(new Date().toISOString().split("T")[0]);
   const [healthNotes, setHealthNotes] = useState("");
+
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
 
   const { data: cattle, isLoading } = useGetCattle(id, {
     query: { queryKey: getGetCattleQueryKey(id), enabled: !!id },
@@ -209,39 +212,41 @@ export default function CattleDetailPage() {
                 {cattle.status.toUpperCase()}
               </Badge>
             </div>
-            <div className="flex items-center gap-2">
-              {editing ? (
-                <>
-                  <Button size="sm" onClick={saveEdit} disabled={updateCattle.isPending} data-testid="button-save-edit">
-                    <Check size={14} className="mr-1" />
-                    Save
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setEditing(false)} data-testid="button-cancel-edit">
-                    <X size={14} />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button size="sm" variant="outline" onClick={startEdit} data-testid="button-edit">
-                    <Edit2 size={14} className="mr-1" />
-                    Edit
-                  </Button>
-                  {cattle.status === "active" && (
-                    <>
-                      <Button size="sm" variant="outline" onClick={() => setShowStatusDialog("sold")} data-testid="button-mark-sold">
-                        Mark Sold
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setShowStatusDialog("deceased")} data-testid="button-mark-deceased">
-                        Mark Deceased
-                      </Button>
-                    </>
-                  )}
-                  <Button size="sm" variant="destructive" onClick={() => setShowDeleteDialog(true)} data-testid="button-delete">
-                    <Trash2 size={14} />
-                  </Button>
-                </>
-              )}
-            </div>
+            {isAdmin && (
+              <div className="flex items-center gap-2">
+                {editing ? (
+                  <>
+                    <Button size="sm" onClick={saveEdit} disabled={updateCattle.isPending} data-testid="button-save-edit">
+                      <Check size={14} className="mr-1" />
+                      Save
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setEditing(false)} data-testid="button-cancel-edit">
+                      <X size={14} />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button size="sm" variant="outline" onClick={startEdit} data-testid="button-edit">
+                      <Edit2 size={14} className="mr-1" />
+                      Edit
+                    </Button>
+                    {cattle.status === "active" && (
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => setShowStatusDialog("sold")} data-testid="button-mark-sold">
+                          Mark Sold
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => setShowStatusDialog("deceased")} data-testid="button-mark-deceased">
+                          Mark Deceased
+                        </Button>
+                      </>
+                    )}
+                    <Button size="sm" variant="destructive" onClick={() => setShowDeleteDialog(true)} data-testid="button-delete">
+                      <Trash2 size={14} />
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -336,10 +341,12 @@ export default function CattleDetailPage() {
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">Weight History</h3>
-                <Button size="sm" onClick={() => setShowWeightModal(true)} data-testid="button-add-weight">
-                  <Weight size={14} className="mr-1" />
-                  Add Weight
-                </Button>
+                {isAdmin && (
+                  <Button size="sm" onClick={() => setShowWeightModal(true)} data-testid="button-add-weight">
+                    <Weight size={14} className="mr-1" />
+                    Add Weight
+                  </Button>
+                )}
               </div>
               {weights.length === 0 ? (
                 <p className="text-sm text-muted-foreground py-4 text-center">No weight records</p>
@@ -365,10 +372,12 @@ export default function CattleDetailPage() {
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">Health Records</h3>
-                <Button size="sm" onClick={() => setShowHealthModal(true)} data-testid="button-add-health">
-                  <Heart size={14} className="mr-1" />
-                  Add Record
-                </Button>
+                {isAdmin && (
+                  <Button size="sm" onClick={() => setShowHealthModal(true)} data-testid="button-add-health">
+                    <Heart size={14} className="mr-1" />
+                    Add Record
+                  </Button>
+                )}
               </div>
               {healthRecords.length === 0 ? (
                 <p className="text-sm text-muted-foreground py-4 text-center">No health records</p>

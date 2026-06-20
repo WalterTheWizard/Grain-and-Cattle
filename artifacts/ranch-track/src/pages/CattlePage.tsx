@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
   useListCattle, useCreateCattle, useUpdateCattleStatus,
-  getListCattleQueryKey,
+  useGetMe, getListCattleQueryKey, getGetMeQueryKey,
 } from "@workspace/api-client-react";
 import { Plus, Search, ChevronDown, ChevronRight, Beef, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -84,6 +84,8 @@ function CattleRow({ c }: CattleRowProps) {
 export default function CattlePage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [soldOpen, setSoldOpen] = useState(false);
@@ -147,10 +149,12 @@ export default function CattlePage() {
           <h1 className="text-2xl font-bold text-foreground">Livestock</h1>
           <p className="text-sm text-muted-foreground">Manage your cattle records</p>
         </div>
-        <Button onClick={() => setShowModal(true)} data-testid="button-register-cattle">
-          <Plus size={15} className="mr-1.5" />
-          Register Cattle
-        </Button>
+        {isAdmin && (
+          <Button onClick={() => setShowModal(true)} data-testid="button-register-cattle">
+            <Plus size={15} className="mr-1.5" />
+            Register Cattle
+          </Button>
+        )}
       </div>
 
       <div className="flex items-center gap-3">

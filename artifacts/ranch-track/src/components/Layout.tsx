@@ -27,6 +27,7 @@ const navGroups: {
     items: [
       { path: "/cattle", label: "Cattle Records", icon: Beef },
       { path: "/tasks", label: "Farm Tasks", icon: ClipboardList },
+      { path: "/fields", label: "Field Management", icon: Map },
       { path: "/time-cards", label: "Time Cards", icon: Clock },
       { path: "/employees", label: "Employees", icon: Users },
     ],

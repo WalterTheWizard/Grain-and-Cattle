@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useListStorageBins, useCreateStorageBin, useUpdateStorageBin, useDeleteStorageBin,
-  getListStorageBinsQueryKey, getGetDashboardQueryKey,
+  useGetMe, getListStorageBinsQueryKey, getGetDashboardQueryKey, getGetMeQueryKey,
   type StorageBin, type StorageBinInput, type StorageBinUpdate,
 } from "@workspace/api-client-react";
 import { Plus, Warehouse, Trash2, Pencil, Droplets, Database } from "lucide-react";
@@ -37,6 +37,8 @@ function emptyForm() {
 export default function StoragePage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -130,10 +132,12 @@ export default function StoragePage() {
           <h1 className="text-2xl font-bold text-foreground">Grain Storage</h1>
           <p className="text-sm text-muted-foreground">Monitor bin levels, moisture, and capacity</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-add-bin">
-          <Plus size={15} className="mr-1.5" />
-          Add Storage Bin
-        </Button>
+        {isAdmin && (
+          <Button onClick={openCreate} data-testid="button-add-bin">
+            <Plus size={15} className="mr-1.5" />
+            Add Storage Bin
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -186,14 +190,16 @@ export default function StoragePage() {
                         {bin.moisture != null && <span>{bin.moisture}% moisture</span>}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={() => openEdit(bin)} data-testid={`button-edit-bin-${bin.id}`}>
-                        <Pencil size={13} />
-                      </Button>
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" onClick={() => deleteBin.mutate({ id: bin.id })} data-testid={`button-delete-bin-${bin.id}`}>
-                        <Trash2 size={13} />
-                      </Button>
-                    </div>
+                    {isAdmin && (
+                      <div className="flex items-center gap-1">
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={() => openEdit(bin)} data-testid={`button-edit-bin-${bin.id}`}>
+                          <Pencil size={13} />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" onClick={() => deleteBin.mutate({ id: bin.id })} data-testid={`button-delete-bin-${bin.id}`}>
+                          <Trash2 size={13} />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <div className="mt-3">
                     <div className="flex justify-between text-xs mb-1">
