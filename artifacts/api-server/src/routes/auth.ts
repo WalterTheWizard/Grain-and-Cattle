@@ -98,6 +98,8 @@ router.get("/auth/demo", async (req, res): Promise<void> => {
     employeeId: employee.id,
     employeeName: employee.fullName,
   });
+  // Set both cookie (for browser) and return token (for localStorage fallback)
+  res.cookie("session", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: "lax" });
   res.json({ token });
 });
 

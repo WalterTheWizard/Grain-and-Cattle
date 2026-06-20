@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth, useClerk } from "@clerk/react";
-import { useLoginEmployee, getGetMeQueryKey, setAuthTokenGetter } from "@workspace/api-client-react";
+import { useLoginEmployee, getGetMeQueryKey } from "@workspace/api-client-react";
 import { Eye } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -44,8 +44,8 @@ export default function LoginPage() {
 
   const loginEmployee = useLoginEmployee({
     mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
+      onSuccess: (data) => {
+        queryClient.setQueryData(getGetMeQueryKey(), data);
       },
       onError: (e: unknown) => {
         const msg = (e as { data?: { error?: string } })?.data?.error || "Invalid credentials";
@@ -59,15 +59,10 @@ export default function LoginPage() {
     loginEmployee.mutate({ data: { farmEmail: empFarmEmail, username: empUsername, password: empPassword } });
   }
 
-  async function handleDemo() {
-    const res = await fetch("/api/auth/demo");
-    if (!res.ok) {
-      toast({ title: "Demo not available", variant: "destructive" });
-      return;
-    }
-    const { token } = await res.json();
-    setAuthTokenGetter(() => token);
-    window.location.reload();
+  function handleDemo() {
+    loginEmployee.mutate({
+      data: { farmEmail: "demo@ranchtrack.com", username: "jdoe", password: "demo" },
+    });
   }
 
   return (
