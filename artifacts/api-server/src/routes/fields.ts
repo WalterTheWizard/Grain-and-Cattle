@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, fieldsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   CreateFieldBody,
   UpdateFieldBody,
@@ -34,7 +34,7 @@ router.get("/fields", requireAuth, async (req, res): Promise<void> => {
   res.json(ListFieldsResponse.parse(fields.map(formatField)));
 });
 
-router.post("/fields", requireAuth, async (req, res): Promise<void> => {
+router.post("/fields", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = CreateFieldBody.safeParse(req.body);
   if (!parsed.success) {
@@ -59,7 +59,7 @@ router.post("/fields", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(formatField(field));
 });
 
-router.patch("/fields/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/fields/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -93,7 +93,7 @@ router.patch("/fields/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(UpdateFieldResponse.parse(formatField(updated)));
 });
 
-router.delete("/fields/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/fields/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);

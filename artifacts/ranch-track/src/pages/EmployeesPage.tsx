@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useListEmployees, useCreateEmployee, useDeleteEmployee,
-  getListEmployeesQueryKey,
+  useGetMe, getListEmployeesQueryKey, getGetMeQueryKey,
 } from "@workspace/api-client-react";
 import { Plus, Users, Trash2, Shield, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 export default function EmployeesPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
 
   const [showModal, setShowModal] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -87,10 +89,12 @@ export default function EmployeesPage() {
           <h1 className="text-2xl font-bold text-foreground">Employee Profiles</h1>
           <p className="text-sm text-muted-foreground">Manage your farm staff</p>
         </div>
-        <Button onClick={() => setShowModal(true)} data-testid="button-add-staff">
-          <Plus size={15} className="mr-1.5" />
-          Add Staff Member
-        </Button>
+        {isAdmin && (
+          <Button onClick={() => setShowModal(true)} data-testid="button-add-staff">
+            <Plus size={15} className="mr-1.5" />
+            Add Staff Member
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -144,15 +148,17 @@ export default function EmployeesPage() {
                       </div>
                     </div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                    onClick={() => deleteEmployee.mutate({ id: emp.id })}
-                    data-testid={`button-delete-employee-${emp.id}`}
-                  >
-                    <Trash2 size={13} />
-                  </Button>
+                  {isAdmin && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                      onClick={() => deleteEmployee.mutate({ id: emp.id })}
+                      data-testid={`button-delete-employee-${emp.id}`}
+                    >
+                      <Trash2 size={13} />
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import crypto from "crypto";
 import { db, employeesTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   CreateEmployeeBody,
   UpdateEmployeeBody,
@@ -37,7 +37,7 @@ router.get("/employees", requireAuth, async (req, res): Promise<void> => {
   res.json(ListEmployeesResponse.parse(employees.map(formatEmployee)));
 });
 
-router.post("/employees", requireAuth, async (req, res): Promise<void> => {
+router.post("/employees", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = CreateEmployeeBody.safeParse(req.body);
   if (!parsed.success) {
@@ -60,7 +60,7 @@ router.post("/employees", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(formatEmployee(employee));
 });
 
-router.patch("/employees/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/employees/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -90,7 +90,7 @@ router.patch("/employees/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(UpdateEmployeeResponse.parse(formatEmployee(updated)));
 });
 
-router.delete("/employees/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/employees/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);

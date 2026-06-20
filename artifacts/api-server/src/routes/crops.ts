@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, cropsTable, fieldsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   CreateCropBody,
   UpdateCropBody,
@@ -43,7 +43,7 @@ async function fieldBelongsToFarm(fieldId: number, farmId: number): Promise<bool
   return Boolean(field);
 }
 
-router.post("/crops", requireAuth, async (req, res): Promise<void> => {
+router.post("/crops", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = CreateCropBody.safeParse(req.body);
   if (!parsed.success) {
@@ -75,7 +75,7 @@ router.post("/crops", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(formatCrop(crop));
 });
 
-router.patch("/crops/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/crops/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -118,7 +118,7 @@ router.patch("/crops/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(UpdateCropResponse.parse(formatCrop(updated)));
 });
 
-router.delete("/crops/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/crops/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);

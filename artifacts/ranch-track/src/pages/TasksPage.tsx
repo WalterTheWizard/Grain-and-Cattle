@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useListTasks, useCreateTask, useUpdateTask, useDeleteTask,
-  useListEmployees, getListTasksQueryKey, getListEmployeesQueryKey,
+  useListEmployees, useGetMe,
+  getListTasksQueryKey, getListEmployeesQueryKey, getGetMeQueryKey,
 } from "@workspace/api-client-react";
 import { Plus, Check, Trash2, ClipboardList, Clock, Calendar, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,8 @@ import { useToast } from "@/hooks/use-toast";
 export default function TasksPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
 
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
@@ -168,15 +171,17 @@ export default function TasksPage() {
                   Reopen
                 </Button>
               )}
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                onClick={() => deleteTask.mutate({ id: task.id })}
-                data-testid={`button-delete-task-${task.id}`}
-              >
-                <Trash2 size={12} />
-              </Button>
+              {isAdmin && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => deleteTask.mutate({ id: task.id })}
+                  data-testid={`button-delete-task-${task.id}`}
+                >
+                  <Trash2 size={12} />
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>
@@ -191,10 +196,12 @@ export default function TasksPage() {
           <h1 className="text-2xl font-bold text-foreground">Farm Tasks</h1>
           <p className="text-sm text-muted-foreground">Manage jobs and assignments</p>
         </div>
-        <Button onClick={() => setShowModal(true)} data-testid="button-post-job">
-          <Plus size={15} className="mr-1.5" />
-          Post Job
-        </Button>
+        {isAdmin && (
+          <Button onClick={() => setShowModal(true)} data-testid="button-post-job">
+            <Plus size={15} className="mr-1.5" />
+            Post Job
+          </Button>
+        )}
       </div>
 
       <Tabs defaultValue="pending">

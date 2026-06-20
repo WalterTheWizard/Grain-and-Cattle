@@ -3,7 +3,7 @@ import { clerkClient } from "@clerk/express";
 import { db, farmsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { sessions } from "../lib/sessions";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   UpdateSettingsBody,
   GetSettingsResponse,
@@ -30,7 +30,7 @@ router.get("/settings", requireAuth, async (req, res): Promise<void> => {
   }));
 });
 
-router.patch("/settings", requireAuth, async (req, res): Promise<void> => {
+router.patch("/settings", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = UpdateSettingsBody.safeParse(req.body);
   if (!parsed.success) {

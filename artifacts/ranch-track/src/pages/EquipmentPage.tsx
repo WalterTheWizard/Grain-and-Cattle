@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useListEquipment, useCreateEquipment, useUpdateEquipment, useDeleteEquipment,
-  getListEquipmentQueryKey,
+  useGetMe, getListEquipmentQueryKey,
   useListMaintenanceLogs, useAddMaintenanceLog, useDeleteMaintenanceLog,
-  getListMaintenanceLogsQueryKey, getGetDashboardQueryKey,
+  getListMaintenanceLogsQueryKey, getGetDashboardQueryKey, getGetMeQueryKey,
   type Equipment, type EquipmentInput, type EquipmentUpdate, type MaintenanceLogInput,
 } from "@workspace/api-client-react";
 import { Plus, Tractor, Trash2, Pencil, Wrench, AlertTriangle } from "lucide-react";
@@ -45,6 +45,8 @@ function emptyMaint() {
 export default function EquipmentPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -187,10 +189,12 @@ export default function EquipmentPage() {
           <h1 className="text-2xl font-bold text-foreground">Equipment</h1>
           <p className="text-sm text-muted-foreground">Track machinery and maintenance history</p>
         </div>
-        <Button onClick={openCreate} data-testid="button-add-equipment">
-          <Plus size={15} className="mr-1.5" />
-          Add Equipment
-        </Button>
+        {isAdmin && (
+          <Button onClick={openCreate} data-testid="button-add-equipment">
+            <Plus size={15} className="mr-1.5" />
+            Add Equipment
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -249,12 +253,16 @@ export default function EquipmentPage() {
                     <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => { setMaintFor(eq); setMaintForm(emptyMaint()); }} data-testid={`button-maintenance-${eq.id}`}>
                       <Wrench size={12} className="mr-1" /> Maintenance
                     </Button>
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={() => openEdit(eq)} data-testid={`button-edit-equipment-${eq.id}`}>
-                      <Pencil size={13} />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" onClick={() => deleteEquipment.mutate({ id: eq.id })} data-testid={`button-delete-equipment-${eq.id}`}>
-                      <Trash2 size={13} />
-                    </Button>
+                    {isAdmin && (
+                      <>
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground" onClick={() => openEdit(eq)} data-testid={`button-edit-equipment-${eq.id}`}>
+                          <Pencil size={13} />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" onClick={() => deleteEquipment.mutate({ id: eq.id })} data-testid={`button-delete-equipment-${eq.id}`}>
+                          <Trash2 size={13} />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </CardContent>

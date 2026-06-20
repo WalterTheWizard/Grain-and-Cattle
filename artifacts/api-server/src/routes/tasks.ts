@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, tasksTable, employeesTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   CreateTaskBody,
   UpdateTaskBody,
@@ -51,7 +51,7 @@ router.get("/tasks", requireAuth, async (req, res): Promise<void> => {
   res.json(ListTasksResponse.parse(formatted));
 });
 
-router.post("/tasks", requireAuth, async (req, res): Promise<void> => {
+router.post("/tasks", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = CreateTaskBody.safeParse(req.body);
   if (!parsed.success) {
@@ -74,7 +74,7 @@ router.post("/tasks", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(formatted);
 });
 
-router.patch("/tasks/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/tasks/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -114,7 +114,7 @@ router.patch("/tasks/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(UpdateTaskResponse.parse(formatted));
 });
 
-router.delete("/tasks/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/tasks/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);

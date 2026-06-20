@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useListFields, useCreateField, useUpdateField, useDeleteField,
-  getListFieldsQueryKey,
+  useGetMe, getListFieldsQueryKey, getGetMeQueryKey,
 } from "@workspace/api-client-react";
 import { Plus, Map, Layers, CheckCircle2, XCircle, Trash2, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -109,6 +109,8 @@ function LeafletMap({ fields }: { fields: Array<{ id: number; name: string; lati
 export default function FieldsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
+  const isAdmin = me?.role !== "employee";
 
   const [showModal, setShowModal] = useState(false);
   const [editingField, setEditingField] = useState<number | null>(null);
@@ -202,10 +204,12 @@ export default function FieldsPage() {
           <h1 className="text-2xl font-bold text-foreground">Field Management</h1>
           <p className="text-sm text-muted-foreground">Manage your pastures and fields</p>
         </div>
-        <Button onClick={() => { setEditingField(null); resetForm(); setShowModal(true); }} data-testid="button-add-field">
-          <Plus size={15} className="mr-1.5" />
-          Add Field
-        </Button>
+        {isAdmin && (
+          <Button onClick={() => { setEditingField(null); resetForm(); setShowModal(true); }} data-testid="button-add-field">
+            <Plus size={15} className="mr-1.5" />
+            Add Field
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -264,14 +268,16 @@ export default function FieldsPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEditModal({ ...f, color: f.color ?? "#22c55e" })} data-testid={`button-edit-field-${f.id}`}>
-                      <Edit2 size={13} />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" onClick={() => deleteField.mutate({ id: f.id })} data-testid={`button-delete-field-${f.id}`}>
-                      <Trash2 size={13} />
-                    </Button>
-                  </div>
+                  {isAdmin && (
+                    <div className="flex items-center gap-1.5">
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEditModal({ ...f, color: f.color ?? "#22c55e" })} data-testid={`button-edit-field-${f.id}`}>
+                        <Edit2 size={13} />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive" onClick={() => deleteField.mutate({ id: f.id })} data-testid={`button-delete-field-${f.id}`}>
+                        <Trash2 size={13} />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

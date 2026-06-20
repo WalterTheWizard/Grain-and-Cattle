@@ -49,3 +49,19 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
   res.status(401).json({ error: "Not authenticated" });
 }
+
+/**
+ * Guard for admin-only actions (owner / employer). Employees get 403.
+ */
+export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  const session = res.locals.session;
+  if (!session) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
+  if (session.role === "employee") {
+    res.status(403).json({ error: "Admin access required" });
+    return;
+  }
+  next();
+}

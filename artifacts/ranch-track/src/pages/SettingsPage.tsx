@@ -34,6 +34,7 @@ export default function SettingsPage() {
 
   const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey(), retry: false } });
   const isOwner = me?.role === "owner";
+  const isEmployee = me?.role === "employee";
 
   const { data: settings, isLoading } = useGetSettings({
     query: { queryKey: getGetSettingsQueryKey() },
@@ -123,6 +124,7 @@ export default function SettingsPage() {
               id="setting-farm-name"
               value={farmName}
               onChange={e => { setFarmName(e.target.value); markDirty(); }}
+              disabled={isEmployee}
               data-testid="input-setting-farm-name"
             />
           </div>
@@ -132,6 +134,7 @@ export default function SettingsPage() {
               id="setting-owner-name"
               value={ownerName}
               onChange={e => { setOwnerName(e.target.value); markDirty(); }}
+              disabled={isEmployee}
               data-testid="input-setting-owner-name"
             />
           </div>
@@ -145,18 +148,21 @@ export default function SettingsPage() {
               value={location}
               onChange={e => { setLocation(e.target.value); markDirty(); }}
               placeholder="e.g. Texas, USA"
+              disabled={isEmployee}
               data-testid="input-setting-location"
             />
           </div>
-          <div className="pt-1">
-            <Button
-              onClick={handleSave}
-              disabled={!dirty || updateSettings.isPending}
-              data-testid="button-save-settings"
-            >
-              {updateSettings.isPending ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
+          {!isEmployee && (
+            <div className="pt-1">
+              <Button
+                onClick={handleSave}
+                disabled={!dirty || updateSettings.isPending}
+                data-testid="button-save-settings"
+              >
+                {updateSettings.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 

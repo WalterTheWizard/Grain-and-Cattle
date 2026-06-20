@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, equipmentTable, maintenanceLogsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   CreateEquipmentBody,
   UpdateEquipmentBody,
@@ -47,7 +47,7 @@ router.get("/equipment", requireAuth, async (req, res): Promise<void> => {
   res.json(ListEquipmentResponse.parse(items.map(formatEquipment)));
 });
 
-router.post("/equipment", requireAuth, async (req, res): Promise<void> => {
+router.post("/equipment", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = CreateEquipmentBody.safeParse(req.body);
   if (!parsed.success) {
@@ -72,7 +72,7 @@ router.post("/equipment", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(formatEquipment(item));
 });
 
-router.patch("/equipment/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/equipment/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -108,7 +108,7 @@ router.patch("/equipment/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(UpdateEquipmentResponse.parse(formatEquipment(updated)));
 });
 
-router.delete("/equipment/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/equipment/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -136,7 +136,7 @@ router.get("/equipment/:id/maintenance", requireAuth, async (req, res): Promise<
   res.json(ListMaintenanceLogsResponse.parse(logs.map(formatLog)));
 });
 
-router.post("/equipment/:id/maintenance", requireAuth, async (req, res): Promise<void> => {
+router.post("/equipment/:id/maintenance", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -167,7 +167,7 @@ router.post("/equipment/:id/maintenance", requireAuth, async (req, res): Promise
   res.status(201).json(formatLog(log));
 });
 
-router.delete("/maintenance/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/maintenance/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);

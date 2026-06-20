@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, storageBinsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   CreateStorageBinBody,
   UpdateStorageBinBody,
@@ -31,7 +31,7 @@ router.get("/storage-bins", requireAuth, async (req, res): Promise<void> => {
   res.json(ListStorageBinsResponse.parse(bins.map(formatBin)));
 });
 
-router.post("/storage-bins", requireAuth, async (req, res): Promise<void> => {
+router.post("/storage-bins", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = CreateStorageBinBody.safeParse(req.body);
   if (!parsed.success) {
@@ -54,7 +54,7 @@ router.post("/storage-bins", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(formatBin(bin));
 });
 
-router.patch("/storage-bins/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/storage-bins/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -88,7 +88,7 @@ router.patch("/storage-bins/:id", requireAuth, async (req, res): Promise<void> =
   res.json(UpdateStorageBinResponse.parse(formatBin(updated)));
 });
 
-router.delete("/storage-bins/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/storage-bins/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);

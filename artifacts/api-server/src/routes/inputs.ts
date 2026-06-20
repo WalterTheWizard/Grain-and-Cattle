@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db, inputsTable, inputApplicationsTable, cropsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
-import { requireAuth } from "../middlewares/session";
+import { requireAuth, requireAdmin } from "../middlewares/session";
 import {
   CreateInputBody,
   UpdateInputBody,
@@ -45,7 +45,7 @@ router.get("/inputs", requireAuth, async (req, res): Promise<void> => {
   res.json(ListInputsResponse.parse(items.map(formatInput)));
 });
 
-router.post("/inputs", requireAuth, async (req, res): Promise<void> => {
+router.post("/inputs", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const parsed = CreateInputBody.safeParse(req.body);
   if (!parsed.success) {
@@ -68,7 +68,7 @@ router.post("/inputs", requireAuth, async (req, res): Promise<void> => {
   res.status(201).json(formatInput(item));
 });
 
-router.patch("/inputs/:id", requireAuth, async (req, res): Promise<void> => {
+router.patch("/inputs/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -102,7 +102,7 @@ router.patch("/inputs/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(UpdateInputResponse.parse(formatInput(updated)));
 });
 
-router.delete("/inputs/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/inputs/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -130,7 +130,7 @@ router.get("/inputs/:id/applications", requireAuth, async (req, res): Promise<vo
   res.json(ListInputApplicationsResponse.parse(apps.map(formatApplication)));
 });
 
-router.post("/inputs/:id/applications", requireAuth, async (req, res): Promise<void> => {
+router.post("/inputs/:id/applications", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
@@ -169,7 +169,7 @@ router.post("/inputs/:id/applications", requireAuth, async (req, res): Promise<v
   res.status(201).json(formatApplication(app));
 });
 
-router.delete("/input-applications/:id", requireAuth, async (req, res): Promise<void> => {
+router.delete("/input-applications/:id", requireAdmin, async (req, res): Promise<void> => {
   const session = res.locals.session;
   const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(rawId, 10);
