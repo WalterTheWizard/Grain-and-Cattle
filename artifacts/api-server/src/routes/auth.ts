@@ -54,7 +54,7 @@ router.post("/auth/employee-login", async (req, res): Promise<void> => {
     employeeName: employee.fullName,
   });
 
-  res.cookie("session", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: "lax" });
+  res.cookie("session", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: "none", secure: true });
   res.json(GetMeResponse.parse({
     farmId: farm.id,
     farmName: farm.name,
@@ -99,7 +99,7 @@ router.get("/auth/demo", async (req, res): Promise<void> => {
     employeeName: employee.fullName,
   });
   // Set both cookie (for browser) and return token (for localStorage fallback)
-  res.cookie("session", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: "lax" });
+  res.cookie("session", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: "none", secure: true });
   res.json({ token });
 });
 

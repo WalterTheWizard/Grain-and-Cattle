@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth, useClerk } from "@clerk/react";
-import { useLoginEmployee, getGetMeQueryKey } from "@workspace/api-client-react";
+import { useLoginEmployee, getGetMeQueryKey, setAuthTokenGetter } from "@workspace/api-client-react";
 import { Eye } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -44,8 +44,9 @@ export default function LoginPage() {
 
   const loginEmployee = useLoginEmployee({
     mutation: {
-      onSuccess: (data) => {
-        queryClient.setQueryData(getGetMeQueryKey(), data);
+      onSuccess: () => {
+        queryClient.clear();
+        setLocation("/dashboard");
       },
       onError: (e: unknown) => {
         const msg = (e as { data?: { error?: string } })?.data?.error || "Invalid credentials";
