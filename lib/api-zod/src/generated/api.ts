@@ -31,7 +31,8 @@ export const LoginEmployeeResponse = zod.object({
   "email": zod.string(),
   "role": zod.enum(['owner', 'employer', 'employee']),
   "employeeId": zod.number().nullish(),
-  "employeeName": zod.string().nullish()
+  "employeeName": zod.string().nullish(),
+  "farmType": zod.union([zod.literal('cattle'),zod.literal('grain'),zod.literal('both'),zod.literal(null)]).nullish()
 })
 
 
@@ -44,7 +45,26 @@ export const GetMeResponse = zod.object({
   "email": zod.string(),
   "role": zod.enum(['owner', 'employer', 'employee']),
   "employeeId": zod.number().nullish(),
-  "employeeName": zod.string().nullish()
+  "employeeName": zod.string().nullish(),
+  "farmType": zod.union([zod.literal('cattle'),zod.literal('grain'),zod.literal('both'),zod.literal(null)]).nullish()
+})
+
+
+/**
+ * @summary Set the farm type (cattle, grain, or both)
+ */
+export const SetFarmTypeBody = zod.object({
+  "farmType": zod.enum(['cattle', 'grain', 'both'])
+})
+
+export const SetFarmTypeResponse = zod.object({
+  "farmId": zod.number(),
+  "farmName": zod.string(),
+  "email": zod.string(),
+  "role": zod.enum(['owner', 'employer', 'employee']),
+  "employeeId": zod.number().nullish(),
+  "employeeName": zod.string().nullish(),
+  "farmType": zod.union([zod.literal('cattle'),zod.literal('grain'),zod.literal('both'),zod.literal(null)]).nullish()
 })
 
 

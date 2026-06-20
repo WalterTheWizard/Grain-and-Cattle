@@ -4,7 +4,7 @@ import { db, farmsTable, employeesTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
 import { sessions } from "../lib/sessions";
 import { requireAuth } from "../middlewares/session";
-import { LoginEmployeeBody, GetMeResponse } from "@workspace/api-zod";
+import { LoginEmployeeBody, GetMeResponse, SetFarmTypeBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
@@ -62,6 +62,7 @@ router.post("/auth/employee-login", async (req, res): Promise<void> => {
     role,
     employeeId: employee.id,
     employeeName: employee.fullName,
+    farmType: farm.farmType ?? null,
   }));
 });
 
@@ -103,8 +104,9 @@ router.get("/auth/demo", async (req, res): Promise<void> => {
   res.json({ token });
 });
 
-router.get("/auth/me", requireAuth, (req, res): void => {
+router.get("/auth/me", requireAuth, async (req, res): Promise<void> => {
   const session = res.locals.session;
+  const [farm] = await db.select().from(farmsTable).where(eq(farmsTable.id, session.farmId));
   res.json(GetMeResponse.parse({
     farmId: session.farmId,
     farmName: session.farmName,
@@ -112,6 +114,31 @@ router.get("/auth/me", requireAuth, (req, res): void => {
     role: session.role,
     employeeId: session.employeeId ?? null,
     employeeName: session.employeeName ?? null,
+    farmType: farm?.farmType ?? null,
+  }));
+});
+
+router.patch("/auth/farm-type", requireAuth, async (req, res): Promise<void> => {
+  const session = res.locals.session;
+  if (session.role !== "owner") {
+    res.status(403).json({ error: "Only farm owners can set the farm type" });
+    return;
+  }
+  const parsed = SetFarmTypeBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const { farmType } = parsed.data;
+  await db.update(farmsTable).set({ farmType }).where(eq(farmsTable.id, session.farmId));
+  res.json(GetMeResponse.parse({
+    farmId: session.farmId,
+    farmName: session.farmName,
+    email: session.email,
+    role: session.role,
+    employeeId: session.employeeId ?? null,
+    employeeName: session.employeeName ?? null,
+    farmType,
   }));
 });
 

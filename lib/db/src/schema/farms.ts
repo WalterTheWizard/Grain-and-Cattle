@@ -10,6 +10,7 @@ export const farmsTable = pgTable("farms", {
   passwordHash: text("password_hash"),
   clerkUserId: text("clerk_user_id").unique(),
   location: text("location"),
+  farmType: text("farm_type"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

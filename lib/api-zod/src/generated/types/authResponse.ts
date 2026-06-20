@@ -5,6 +5,7 @@
  * RanchTrack Cattle Management System API
  * OpenAPI spec version: 0.1.0
  */
+import type { AuthResponseFarmType } from './authResponseFarmType';
 import type { AuthResponseRole } from './authResponseRole';
 
 export interface AuthResponse {
@@ -16,4 +17,6 @@ export interface AuthResponse {
   employeeId?: number | null;
   /** @nullable */
   employeeName?: string | null;
+  /** @nullable */
+  farmType?: AuthResponseFarmType;
 }

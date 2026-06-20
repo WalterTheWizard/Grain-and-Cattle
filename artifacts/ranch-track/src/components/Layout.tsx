@@ -15,39 +15,61 @@ interface LayoutProps {
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-const navGroups: {
+type NavGroup = {
   label: string | null;
   items: { path: string; label: string; icon: React.ElementType }[];
-}[] = [
-  {
-    label: null,
-    items: [{ path: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
-  },
-  {
-    label: "Livestock",
-    items: [
-      { path: "/cattle", label: "Cattle Records", icon: Beef },
-      { path: "/tasks", label: "Farm Tasks", icon: ClipboardList },
-      { path: "/fields", label: "Field Management", icon: Map },
-      { path: "/time-cards", label: "Time Cards", icon: Clock },
-      { path: "/employees", label: "Employees", icon: Users },
-    ],
-  },
-  {
-    label: "Grain",
-    items: [
-      { path: "/fields", label: "Field Management", icon: Map },
-      { path: "/crops", label: "Crops", icon: Sprout },
-      { path: "/storage", label: "Grain Storage", icon: Warehouse },
-      { path: "/equipment", label: "Equipment", icon: Tractor },
-      { path: "/inputs", label: "Inputs", icon: FlaskConical },
-    ],
-  },
-  {
-    label: null,
-    items: [{ path: "/settings", label: "Settings", icon: Settings }],
-  },
-];
+};
+
+const DASHBOARD_GROUP: NavGroup = {
+  label: null,
+  items: [{ path: "/dashboard", label: "Dashboard", icon: LayoutDashboard }],
+};
+
+const LIVESTOCK_GROUP: NavGroup = {
+  label: "Livestock",
+  items: [
+    { path: "/cattle", label: "Cattle Records", icon: Beef },
+    { path: "/tasks", label: "Farm Tasks", icon: ClipboardList },
+    { path: "/fields", label: "Field Management", icon: Map },
+    { path: "/time-cards", label: "Time Cards", icon: Clock },
+    { path: "/employees", label: "Employees", icon: Users },
+  ],
+};
+
+const GRAIN_ONLY_GROUP: NavGroup = {
+  label: "Grain",
+  items: [
+    { path: "/crops", label: "Crops", icon: Sprout },
+    { path: "/storage", label: "Grain Storage", icon: Warehouse },
+    { path: "/equipment", label: "Equipment", icon: Tractor },
+    { path: "/inputs", label: "Inputs", icon: FlaskConical },
+  ],
+};
+
+const FARM_OPS_GROUP: NavGroup = {
+  label: "Farm",
+  items: [
+    { path: "/tasks", label: "Farm Tasks", icon: ClipboardList },
+    { path: "/fields", label: "Field Management", icon: Map },
+    { path: "/employees", label: "Employees", icon: Users },
+  ],
+};
+
+const SETTINGS_GROUP: NavGroup = {
+  label: null,
+  items: [{ path: "/settings", label: "Settings", icon: Settings }],
+};
+
+function getNavGroups(farmType: string | null | undefined): NavGroup[] {
+  if (farmType === "cattle") {
+    return [DASHBOARD_GROUP, LIVESTOCK_GROUP, SETTINGS_GROUP];
+  }
+  if (farmType === "grain") {
+    return [DASHBOARD_GROUP, FARM_OPS_GROUP, GRAIN_ONLY_GROUP, SETTINGS_GROUP];
+  }
+  // "both" or unknown — show everything
+  return [DASHBOARD_GROUP, LIVESTOCK_GROUP, GRAIN_ONLY_GROUP, SETTINGS_GROUP];
+}
 
 function RanchTrackLogo({ size = 36 }: { size?: number }) {
   return (
@@ -102,7 +124,7 @@ function SidebarBody({
       </div>
 
       <nav className="flex-1 py-3 px-2 flex flex-col gap-0.5 overflow-y-auto">
-        {navGroups.map((group, gi) => (
+        {getNavGroups(user.farmType).map((group, gi) => (
           <div key={group.label ?? `group-${gi}`} className={group.label ? "mt-2" : ""}>
             {group.label && (
               <p className="px-2 pt-1 pb-1 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground/70">

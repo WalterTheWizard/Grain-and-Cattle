@@ -24,6 +24,18 @@ export const AuthResponseRole = {
   employee: 'employee',
 } as const;
 
+/**
+ * @nullable
+ */
+export type AuthResponseFarmType = typeof AuthResponseFarmType[keyof typeof AuthResponseFarmType] | null;
+
+
+export const AuthResponseFarmType = {
+  cattle: 'cattle',
+  grain: 'grain',
+  both: 'both',
+} as const;
+
 export interface AuthResponse {
   farmId: number;
   farmName: string;
@@ -33,6 +45,21 @@ export interface AuthResponse {
   employeeId?: number | null;
   /** @nullable */
   employeeName?: string | null;
+  /** @nullable */
+  farmType?: AuthResponseFarmType;
+}
+
+export type SetFarmTypeBodyFarmType = typeof SetFarmTypeBodyFarmType[keyof typeof SetFarmTypeBodyFarmType];
+
+
+export const SetFarmTypeBodyFarmType = {
+  cattle: 'cattle',
+  grain: 'grain',
+  both: 'both',
+} as const;
+
+export interface SetFarmTypeBody {
+  farmType: SetFarmTypeBodyFarmType;
 }
 
 export type CattleGender = typeof CattleGender[keyof typeof CattleGender];

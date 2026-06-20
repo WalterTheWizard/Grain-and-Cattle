@@ -7,6 +7,7 @@
  */
 
 export * from './authResponse';
+export * from './authResponseFarmType';
 export * from './authResponseRole';
 export * from './cattle';
 export * from './cattleDetail';
@@ -68,6 +69,8 @@ export * from './listTasksStatus';
 export * from './listTimeEntriesParams';
 export * from './maintenanceLog';
 export * from './maintenanceLogInput';
+export * from './setFarmTypeBody';
+export * from './setFarmTypeBodyFarmType';
 export * from './settingsUpdate';
 export * from './storageBin';
 export * from './storageBinInput';

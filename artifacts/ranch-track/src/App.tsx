@@ -22,6 +22,7 @@ import StoragePage from "@/pages/StoragePage";
 import EquipmentPage from "@/pages/EquipmentPage";
 import InputsPage from "@/pages/InputsPage";
 import NotFound from "@/pages/not-found";
+import OnboardingPage from "@/pages/OnboardingPage";
 import type { AuthResponse } from "@workspace/api-client-react";
 
 const queryClient = new QueryClient({
@@ -149,6 +150,10 @@ function AuthenticatedApp() {
 
   if (!user) {
     return <LoginPage />;
+  }
+
+  if (user.farmType === null || user.farmType === undefined) {
+    return <OnboardingPage farmName={user.farmName} />;
   }
 
   return (

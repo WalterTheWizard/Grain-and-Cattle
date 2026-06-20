@@ -93,6 +93,27 @@ paths:
         "401":
           description: Not authenticated
 
+  /auth/farm-type:
+    patch:
+      operationId: setFarmType
+      tags: [auth]
+      summary: Set the farm type (cattle, grain, or both)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetFarmTypeBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Not authenticated
+
   /dashboard:
     get:
       operationId: getDashboard
@@ -1104,6 +1125,17 @@ components:
           type: ["integer", "null"]
         employeeName:
           type: ["string", "null"]
+        farmType:
+          type: ["string", "null"]
+          enum: [cattle, grain, both, null]
+
+    SetFarmTypeBody:
+      type: object
+      required: [farmType]
+      properties:
+        farmType:
+          type: string
+          enum: [cattle, grain, both]
 
     DashboardData:
       type: object

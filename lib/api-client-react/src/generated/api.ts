@@ -57,6 +57,7 @@ import type {
   ListTimeEntriesParams,
   MaintenanceLog,
   MaintenanceLogInput,
+  SetFarmTypeBody,
   SettingsUpdate,
   StorageBin,
   StorageBinInput,
@@ -375,6 +376,77 @@ export function useGetMe<TData = Awaited<ReturnType<typeof getMe>>, TError = Err
 
 
 
+
+export const getSetFarmTypeUrl = () => {
+
+
+
+
+  return `/api/auth/farm-type`
+}
+
+/**
+ * @summary Set the farm type (cattle, grain, or both)
+ */
+export const setFarmType = async (setFarmTypeBody: SetFarmTypeBody, options?: RequestInit): Promise<AuthResponse> => {
+
+  return customFetch<AuthResponse>(getSetFarmTypeUrl(),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      setFarmTypeBody,)
+  }
+);}
+
+
+
+
+export const getSetFarmTypeMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setFarmType>>, TError,{data: BodyType<SetFarmTypeBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof setFarmType>>, TError,{data: BodyType<SetFarmTypeBody>}, TContext> => {
+
+const mutationKey = ['setFarmType'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof setFarmType>>, {data: BodyType<SetFarmTypeBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  setFarmType(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SetFarmTypeMutationResult = NonNullable<Awaited<ReturnType<typeof setFarmType>>>
+    export type SetFarmTypeMutationBody = BodyType<SetFarmTypeBody>
+    export type SetFarmTypeMutationError = ErrorType<void>
+
+    /**
+ * @summary Set the farm type (cattle, grain, or both)
+ */
+export const useSetFarmType = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setFarmType>>, TError,{data: BodyType<SetFarmTypeBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof setFarmType>>,
+        TError,
+        {data: BodyType<SetFarmTypeBody>},
+        TContext
+      > => {
+      return useMutation(getSetFarmTypeMutationOptions(options));
+    }
 
 export const getGetDashboardUrl = () => {
 
