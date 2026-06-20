@@ -28,13 +28,13 @@ const navGroups: {
       { path: "/cattle", label: "Cattle Records", icon: Beef },
       { path: "/tasks", label: "Farm Tasks", icon: ClipboardList },
       { path: "/time-cards", label: "Time Cards", icon: Clock },
-      { path: "/fields", label: "Field Management", icon: Map },
       { path: "/employees", label: "Employees", icon: Users },
     ],
   },
   {
     label: "Grain",
     items: [
+      { path: "/fields", label: "Field Management", icon: Map },
       { path: "/crops", label: "Crops", icon: Sprout },
       { path: "/storage", label: "Grain Storage", icon: Warehouse },
       { path: "/equipment", label: "Equipment", icon: Tractor },
