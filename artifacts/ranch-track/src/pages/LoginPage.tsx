@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth, useClerk } from "@clerk/react";
 import { useLoginEmployee, getGetMeQueryKey } from "@workspace/api-client-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,8 @@ export default function LoginPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const { isSignedIn, isLoaded, userId } = useAuth();
+  const { signOut } = useClerk();
 
   const [empFarmEmail, setEmpFarmEmail] = useState("");
   const [empUsername, setEmpUsername] = useState("");
@@ -78,26 +81,45 @@ export default function LoginPage() {
 
               <TabsContent value="farm">
                 <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Sign in with Google or your email to access your ranch.
-                  </p>
-                  <Button
-                    type="button"
-                    className="w-full"
-                    onClick={() => setLocation("/sign-in")}
-                    data-testid="button-farm-signin"
-                  >
-                    Sign In
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => setLocation("/sign-up")}
-                    data-testid="button-farm-register"
-                  >
-                    Register a New Farm
-                  </Button>
+                  {isSignedIn ? (
+                    <>
+                      <p className="text-sm text-muted-foreground">
+                        You already have a session but your farm could not be found.
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => signOut({ redirectUrl: basePath || "/" })}
+                        data-testid="button-farm-signout"
+                      >
+                        Sign Out and Start Over
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm text-muted-foreground">
+                        Sign in with Google or your email to access your ranch.
+                      </p>
+                      <Button
+                        type="button"
+                        className="w-full"
+                        onClick={() => setLocation("/sign-in")}
+                        data-testid="button-farm-signin"
+                      >
+                        Sign In
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => setLocation("/sign-up")}
+                        data-testid="button-farm-register"
+                      >
+                        Register a New Farm
+                      </Button>
+                    </>
+                  )}
                 </div>
               </TabsContent>
 
