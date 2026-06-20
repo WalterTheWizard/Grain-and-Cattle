@@ -140,7 +140,7 @@ export default function StoragePage() {
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {[
           { label: "Bins", value: bins.length, icon: Warehouse, color: "border-green-500" },
           { label: "Total Stored", value: totalStored.toLocaleString(), icon: Database, color: "border-emerald-500" },

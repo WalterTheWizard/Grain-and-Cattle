@@ -1,2 +1,3 @@
 - [RanchTrack auth pattern](ranchtrack-auth.md) — dual auth: Clerk owners (JIT-provisioned farms) + custom Map sessions for employees; `custom-fetch.ts` must keep `credentials:"include"`.
 - [Drizzle push TTY prompt](drizzle-push-tty.md) — `db run push` blocks on an interactive prompt in this env; apply schema changes via direct SQL when non-interactive.
+- [Overlay z-index scale](zindex-overlay-scale.md) — Leaflet ~1000 < drawer 1100 < dialog/alert 1200 < select 1300; new portal UI must slot above what it covers, never z-50.

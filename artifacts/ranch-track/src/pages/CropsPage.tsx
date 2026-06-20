@@ -168,7 +168,7 @@ export default function CropsPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {[
           { label: "Active Plantings", value: active.length, icon: Sprout, color: "border-green-500" },
           { label: "Acres Planted", value: totalAcres.toLocaleString(), icon: Maximize, color: "border-emerald-500" },

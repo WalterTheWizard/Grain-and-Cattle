@@ -188,7 +188,7 @@ export default function InputsPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {[
           { label: "Total Inputs", value: inputs.length, icon: FlaskConical, color: "border-green-500" },
           { label: "Categories", value: new Set(inputs.map(i => i.category)).size, icon: Package, color: "border-emerald-500" },

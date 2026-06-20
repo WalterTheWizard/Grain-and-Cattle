@@ -62,15 +62,15 @@ function CattleRow({ c }: CattleRowProps) {
         data-testid={`cattle-row-${c.id}`}
         className="flex items-center px-4 py-3 hover:bg-muted/40 cursor-pointer border-b border-border last:border-0 transition-colors"
       >
-        <div className="w-24 font-mono text-sm font-medium">#{c.tagNumber}</div>
-        <div className="flex-1 text-sm text-foreground">{c.name || "—"}</div>
-        <div className="w-20">
+        <div className="w-20 sm:w-24 font-mono text-sm font-medium">#{c.tagNumber}</div>
+        <div className="flex-1 min-w-0 text-sm text-foreground truncate">{c.name || "—"}</div>
+        <div className="w-16 sm:w-20">
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${genderColor(c.gender)}`}>
             {c.gender}
           </span>
         </div>
-        <div className="w-28 text-xs text-muted-foreground">{c.breed || "—"}</div>
-        <div className="w-16 text-xs text-muted-foreground">{calcAge(c.birthDate ?? null)}</div>
+        <div className="hidden sm:block w-28 text-xs text-muted-foreground">{c.breed || "—"}</div>
+        <div className="hidden sm:block w-16 text-xs text-muted-foreground">{calcAge(c.birthDate ?? null)}</div>
         <div className="w-20">
           <Badge variant={c.status === "active" ? "default" : "secondary"} className="text-xs">
             {c.status.toUpperCase()}
@@ -176,11 +176,11 @@ export default function CattlePage() {
 
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="flex items-center px-4 py-2.5 bg-muted/30 border-b border-border text-xs font-semibold text-muted-foreground">
-          <div className="w-24">Tag #</div>
-          <div className="flex-1">Name</div>
-          <div className="w-20">Gender</div>
-          <div className="w-28">Breed</div>
-          <div className="w-16">Age</div>
+          <div className="w-20 sm:w-24">Tag #</div>
+          <div className="flex-1 min-w-0">Name</div>
+          <div className="w-16 sm:w-20">Gender</div>
+          <div className="hidden sm:block w-28">Breed</div>
+          <div className="hidden sm:block w-16">Age</div>
           <div className="w-20">Status</div>
         </div>
 

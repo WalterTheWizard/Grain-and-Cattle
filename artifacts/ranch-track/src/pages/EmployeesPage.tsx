@@ -97,7 +97,7 @@ export default function EmployeesPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {[
           { label: "Total Staff", value: totalStaff, icon: Users, color: "border-green-500" },
           { label: "Employers", value: employers, icon: Shield, color: "border-blue-500" },

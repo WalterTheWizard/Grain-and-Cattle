@@ -129,7 +129,7 @@ export default function TimeCardPage() {
 
   return (
     <div className="p-6 space-y-5 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Time Cards</h1>
           <p className="text-sm text-muted-foreground">Track employee clock-in and clock-out</p>
@@ -188,7 +188,7 @@ export default function TimeCardPage() {
         </Card>
       )}
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             <div className="flex items-center gap-3 p-4 border-l-4 border-blue-500">
@@ -273,11 +273,11 @@ export default function TimeCardPage() {
       <Card>
         <CardContent className="p-0">
           <div className="flex items-center px-4 py-2.5 bg-muted/30 border-b border-border text-xs font-semibold text-muted-foreground">
-            <div className="w-32">Employee</div>
-            <div className="flex-1">Clock In</div>
-            <div className="flex-1">Clock Out</div>
-            <div className="w-24 text-right">Duration</div>
-            <div className="w-28 text-right">Notes</div>
+            <div className="w-24 sm:w-32">Employee</div>
+            <div className="flex-1 min-w-0">Clock In</div>
+            <div className="flex-1 min-w-0">Clock Out</div>
+            <div className="w-16 sm:w-24 text-right">Duration</div>
+            <div className="hidden sm:block w-28 text-right">Notes</div>
           </div>
 
           {isLoading ? (
@@ -299,9 +299,9 @@ export default function TimeCardPage() {
                 data-testid={`time-entry-${e.id}`}
                 className={`flex items-center px-4 py-3 border-b border-border last:border-0 text-sm ${!e.clockOut ? "bg-green-50/60" : ""}`}
               >
-                <div className="w-32 font-medium text-foreground truncate">{e.employeeName ?? "—"}</div>
-                <div className="flex-1 text-muted-foreground text-xs">{formatTime(e.clockIn)}</div>
-                <div className="flex-1 text-muted-foreground text-xs">
+                <div className="w-24 sm:w-32 font-medium text-foreground truncate pr-2">{e.employeeName ?? "—"}</div>
+                <div className="flex-1 min-w-0 text-muted-foreground text-xs pr-2">{formatTime(e.clockIn)}</div>
+                <div className="flex-1 min-w-0 text-muted-foreground text-xs pr-2">
                   {e.clockOut ? formatTime(e.clockOut) : (
                     <span className="flex items-center gap-1 text-green-600 font-medium">
                       <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
@@ -309,12 +309,12 @@ export default function TimeCardPage() {
                     </span>
                   )}
                 </div>
-                <div className="w-24 text-right">
+                <div className="w-16 sm:w-24 text-right">
                   <span className={`text-xs font-medium ${!e.clockOut ? "text-green-600" : "text-foreground"}`}>
                     {formatDuration(e.durationMinutes ?? null, e.clockIn, e.clockOut ?? null)}
                   </span>
                 </div>
-                <div className="w-28 text-right text-xs text-muted-foreground truncate">
+                <div className="hidden sm:block w-28 text-right text-xs text-muted-foreground truncate">
                   {e.notes || "—"}
                 </div>
               </div>

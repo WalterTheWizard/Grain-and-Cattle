@@ -197,7 +197,7 @@ export default function EquipmentPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {[
           { label: "Total Equipment", value: equipment.length, icon: Tractor, color: "border-green-500" },
           { label: "Operational", value: equipment.filter(e => e.status === "operational").length, icon: Wrench, color: "border-emerald-500" },
