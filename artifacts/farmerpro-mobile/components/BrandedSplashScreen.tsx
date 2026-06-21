@@ -1,6 +1,5 @@
-import { Feather } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
-import { ActivityIndicator, Animated, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Animated, Image, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 
@@ -33,13 +32,11 @@ export default function SplashScreen({ visible }: { visible: boolean }) {
       pointerEvents={visible ? "auto" : "none"}
     >
       <View style={styles.center}>
-        <View style={[styles.logoBox, { backgroundColor: colors.primary }]}>
-          <Feather name="activity" size={40} color="#fff" />
-        </View>
-        <Text style={[styles.appName, { color: colors.text }]}>FarmerPro</Text>
-        <Text style={[styles.tagline, { color: colors.muted }]}>
-          Manage. Grow. Succeed.
-        </Text>
+        <Image
+          source={require("../assets/images/logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <View style={styles.spinner}>
           <ActivityIndicator color={colors.primary} />
         </View>
@@ -58,25 +55,11 @@ const styles = StyleSheet.create({
   center: {
     alignItems: "center",
   },
-  logoBox: {
-    width: 72,
-    height: 72,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  appName: {
-    fontFamily: "Inter_700Bold",
-    fontSize: 28,
-    marginBottom: 4,
-  },
-  tagline: {
-    fontFamily: "Inter_400Regular",
-    fontSize: 14,
-    marginBottom: 24,
+  logo: {
+    width: 220,
+    height: 220,
   },
   spinner: {
-    marginTop: 8,
+    marginTop: 16,
   },
 });

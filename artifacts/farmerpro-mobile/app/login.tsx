@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { Image } from "react-native";
 import { useSSO, useSignIn, useAuth as useClerkAuth } from "@clerk/expo";
 import * as AuthSession from "expo-auth-session";
 import * as Haptics from "expo-haptics";
@@ -185,11 +186,11 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={s.logoRow}>
-            <View style={s.logoBox}>
-              <Feather name="activity" size={32} color="#fff" />
-            </View>
-            <Text style={s.appName}>FarmerPro</Text>
-            <Text style={s.tagline}>Manage. Grow. Succeed.</Text>
+            <Image
+              source={require("../assets/images/logo.png")}
+              style={s.logoImage}
+              resizeMode="contain"
+            />
           </View>
 
           <View style={s.tabBar}>
@@ -405,27 +406,9 @@ function styles(colors: ReturnType<typeof useColors>) {
       paddingBottom: 32,
     },
     logoRow: { alignItems: "center", marginBottom: 28 },
-    logoBox: {
-      width: 72,
-      height: 72,
-      borderRadius: 18,
-      backgroundColor: colors.primary,
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 14,
-    },
-    appName: {
-      fontSize: 26,
-      fontWeight: "700",
-      color: colors.foreground,
-      fontFamily: "Inter_700Bold",
-      letterSpacing: -0.5,
-    },
-    tagline: {
-      fontSize: 14,
-      color: colors.mutedForeground,
-      fontFamily: "Inter_400Regular",
-      marginTop: 4,
+    logoImage: {
+      width: 200,
+      height: 200,
     },
     tabBar: {
       flexDirection: "row",
