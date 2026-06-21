@@ -24,16 +24,13 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useColorScheme() ?? "light";
   const [theme, setThemeState] = useState<ThemePreference>("system");
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(THEME_KEY)
-      .then((stored) => {
-        if (stored === "light" || stored === "dark" || stored === "system") {
-          setThemeState(stored);
-        }
-      })
-      .finally(() => setLoaded(true));
+    AsyncStorage.getItem(THEME_KEY).then((stored) => {
+      if (stored === "light" || stored === "dark" || stored === "system") {
+        setThemeState(stored);
+      }
+    });
   }, []);
 
   const setTheme = useCallback(async (t: ThemePreference) => {
@@ -48,8 +45,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     () => ({ theme, resolvedScheme, setTheme }),
     [theme, resolvedScheme, setTheme]
   );
-
-  if (!loaded) return null;
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

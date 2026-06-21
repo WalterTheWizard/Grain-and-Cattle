@@ -1,46 +1,40 @@
-import React, { useEffect, useRef } from "react";
-import { ActivityIndicator, Animated, Image, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React, { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Animated, Image, StyleSheet } from "react-native";
 import { useColors } from "@/hooks/useColors";
 
-export default function SplashScreen({ visible }: { visible: boolean }) {
+const MIN_DISPLAY_MS = 1800;
+
+export default function BrandedSplashScreen({ visible }: { visible: boolean }) {
   const colors = useColors();
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const insets = useSafeAreaInsets();
+  const [minElapsed, setMinElapsed] = useState(false);
 
   useEffect(() => {
-    if (!visible) {
+    const t = setTimeout(() => setMinElapsed(true), MIN_DISPLAY_MS);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (!visible && minElapsed) {
       Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: 400,
+        duration: 450,
         useNativeDriver: true,
       }).start();
     }
-  }, [visible, fadeAnim]);
+  }, [visible, minElapsed, fadeAnim]);
 
   return (
     <Animated.View
-      style={[
-        styles.container,
-        {
-          backgroundColor: colors.background,
-          opacity: fadeAnim,
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-        },
-      ]}
-      pointerEvents={visible ? "auto" : "none"}
+      style={[styles.container, { backgroundColor: colors.background, opacity: fadeAnim }]}
+      pointerEvents={visible || !minElapsed ? "auto" : "none"}
     >
-      <View style={styles.center}>
-        <Image
-          source={require("../assets/images/logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <View style={styles.spinner}>
-          <ActivityIndicator color={colors.primary} />
-        </View>
-      </View>
+      <Image
+        source={require("../assets/images/logo.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <ActivityIndicator color={colors.primary} style={styles.spinner} />
     </Animated.View>
   );
 }
@@ -52,14 +46,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  center: {
-    alignItems: "center",
-  },
   logo: {
-    width: 220,
-    height: 220,
+    width: 260,
+    height: 260,
   },
   spinner: {
-    marginTop: 16,
+    marginTop: 20,
   },
 });
