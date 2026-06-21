@@ -189,7 +189,7 @@ export default function LoginScreen() {
               <Feather name="activity" size={32} color="#fff" />
             </View>
             <Text style={s.appName}>FarmerPro</Text>
-            <Text style={s.tagline}>Farm Management on the Go</Text>
+            <Text style={s.tagline}>Manage. Grow. Succeed.</Text>
           </View>
 
           <View style={s.tabBar}>

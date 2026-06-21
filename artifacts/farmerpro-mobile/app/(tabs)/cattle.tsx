@@ -2,6 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import {
   useListCattle,
   useUpdateCattleStatus,
+  useCreateCattle,
   getListCattleQueryKey,
 } from "@workspace/api-client-react";
 import * as Haptics from "expo-haptics";
@@ -11,9 +12,12 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -22,6 +26,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 
+import { useAuth } from "@/contexts/AuthContext";
 import { useColors } from "@/hooks/useColors";
 
 function genderColor(gender: string, colors: ReturnType<typeof useColors>) {
@@ -90,7 +95,18 @@ export default function CattleScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { me } = useAuth();
+  const isAdmin = me?.role !== "employee";
   const [search, setSearch] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // Add form
+  const [addTag, setAddTag] = useState("");
+  const [addName, setAddName] = useState("");
+  const [addGender, setAddGender] = useState("");
+  const [addBreed, setAddBreed] = useState("");
+  const [addBirthDate, setAddBirthDate] = useState("");
+  const [addNotes, setAddNotes] = useState("");
 
   const { data: activeCattle = [], isLoading, refetch, isFetching } = useListCattle(
     { status: "active" },
@@ -101,6 +117,43 @@ export default function CattleScreen() {
     {},
     { query: { queryKey: getListCattleQueryKey({}) } }
   );
+
+  const createCattle = useCreateCattle({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListCattleQueryKey() });
+        setShowAddModal(false);
+        resetAddForm();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      },
+    },
+  });
+
+  function resetAddForm() {
+    setAddTag("");
+    setAddName("");
+    setAddGender("");
+    setAddBreed("");
+    setAddBirthDate("");
+    setAddNotes("");
+  }
+
+  function handleAdd() {
+    if (!addTag.trim() || !addGender) {
+      Alert.alert("Missing Fields", "Tag number and gender are required.");
+      return;
+    }
+    createCattle.mutate({
+      data: {
+        tagNumber: addTag.trim(),
+        name: addName.trim() || undefined,
+        gender: addGender as "female" | "male" | "bull" | "steer",
+        breed: addBreed.trim() || undefined,
+        birthDate: addBirthDate || undefined,
+        notes: addNotes.trim() || undefined,
+      },
+    });
+  }
 
   const filtered = (search
     ? allCattle.filter(
@@ -139,6 +192,11 @@ export default function CattleScreen() {
               </Pressable>
             ) : null}
           </View>
+          {isAdmin && (
+            <Pressable onPress={() => setShowAddModal(true)} style={{ width: 44, height: 44, borderRadius: colors.radius, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center" }}>
+              <Feather name="plus" size={20} color="#fff" />
+            </Pressable>
+          )}
         </View>
 
         <View style={{ flexDirection: "row", gap: 12 }}>
@@ -186,6 +244,64 @@ export default function CattleScreen() {
         }}
         showsVerticalScrollIndicator={false}
       />
+
+      {/* Add Modal */}
+      <Modal visible={showAddModal} transparent animationType="slide" onRequestClose={() => setShowAddModal(false)}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+          <Pressable style={styles.backdrop} onPress={() => setShowAddModal(false)}>
+            <View style={[styles.sheet(colors), { paddingBottom: insets.bottom + 16 }]}>
+              <Text style={styles.sheetTitle(colors)}>Register New Cattle</Text>
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={{ gap: 12 }}>
+                  <View>
+                    <Text style={{ fontSize: 11, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginBottom: 4, textTransform: "uppercase" }}>Tag Number *</Text>
+                    <TextInput style={styles.input(colors)} value={addTag} onChangeText={setAddTag} placeholder="Tag number" autoCapitalize="none" />
+                  </View>
+                  <View>
+                    <Text style={{ fontSize: 11, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginBottom: 4, textTransform: "uppercase" }}>Name</Text>
+                    <TextInput style={styles.input(colors)} value={addName} onChangeText={setAddName} placeholder="Optional name" />
+                  </View>
+                  <View>
+                    <Text style={{ fontSize: 11, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginBottom: 4, textTransform: "uppercase" }}>Gender *</Text>
+                    <View style={{ flexDirection: "row", gap: 8 }}>
+                      {(["female", "male", "bull", "steer"] as const).map((g) => (
+                        <Pressable
+                          key={g}
+                          onPress={() => setAddGender(g)}
+                          style={{ flex: 1, paddingVertical: 10, borderRadius: colors.radius, backgroundColor: addGender === g ? colors.primary + "15" : colors.muted, borderWidth: 1, borderColor: addGender === g ? colors.primary : colors.border, alignItems: "center" }}
+                        >
+                          <Text style={{ fontSize: 13, fontFamily: "Inter_500Medium", color: addGender === g ? colors.primary : colors.foreground, textTransform: "capitalize" }}>{g}</Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                  <View>
+                    <Text style={{ fontSize: 11, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginBottom: 4, textTransform: "uppercase" }}>Breed</Text>
+                    <TextInput style={styles.input(colors)} value={addBreed} onChangeText={setAddBreed} placeholder="Breed" />
+                  </View>
+                  <View>
+                    <Text style={{ fontSize: 11, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginBottom: 4, textTransform: "uppercase" }}>Birth Date</Text>
+                    <TextInput style={styles.input(colors)} value={addBirthDate} onChangeText={setAddBirthDate} placeholder="YYYY-MM-DD" />
+                  </View>
+                  <View>
+                    <Text style={{ fontSize: 11, fontFamily: "Inter_500Medium", color: colors.mutedForeground, marginBottom: 4, textTransform: "uppercase" }}>Notes</Text>
+                    <TextInput style={[styles.input(colors), { height: 80, textAlignVertical: "top" }]} value={addNotes} onChangeText={setAddNotes} placeholder="Notes" multiline />
+                  </View>
+                  <Pressable
+                    onPress={handleAdd}
+                    disabled={createCattle.isPending || !addTag || !addGender}
+                    style={[styles.saveBtn(colors), (createCattle.isPending || !addTag || !addGender) && { opacity: 0.6 }]}
+                  >
+                    <Text style={{ color: "#fff", fontFamily: "Inter_600SemiBold", fontSize: 15 }}>
+                      {createCattle.isPending ? "Saving..." : "Register Cattle"}
+                    </Text>
+                  </Pressable>
+                </View>
+              </ScrollView>
+            </View>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </Modal>
     </View>
   );
 }
@@ -193,15 +309,7 @@ export default function CattleScreen() {
 const styles = {
   row: (c: ReturnType<typeof useColors>) =>
     StyleSheet.create({
-      r: {
-        flexDirection: "row" as const,
-        alignItems: "center" as const,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        borderBottomWidth: 1,
-        borderBottomColor: c.border,
-        backgroundColor: c.card,
-      },
+      r: { flexDirection: "row" as const, alignItems: "center" as const, paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: c.border, backgroundColor: c.card },
     }).r,
   tagBox: (c: ReturnType<typeof useColors>) =>
     StyleSheet.create({ b: { backgroundColor: c.muted, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 } }).b,
@@ -217,36 +325,31 @@ const styles = {
   genderText: StyleSheet.create({ t: { fontFamily: "Inter_500Medium", fontSize: 10 } }).t,
   searchBox: (c: ReturnType<typeof useColors>) =>
     StyleSheet.create({
-      b: {
-        flexDirection: "row" as const,
-        alignItems: "center" as const,
-        gap: 8,
-        backgroundColor: c.card,
-        borderRadius: c.radius,
-        borderWidth: 1,
-        borderColor: c.border,
-        paddingHorizontal: 12,
-        height: 44,
-      },
+      b: { flexDirection: "row" as const, alignItems: "center" as const, gap: 8, backgroundColor: c.card, borderRadius: c.radius, borderWidth: 1, borderColor: c.border, paddingHorizontal: 12, height: 44 },
     }).b,
   searchInput: (c: ReturnType<typeof useColors>) =>
-    StyleSheet.create({
-      i: { flex: 1, fontSize: 14, color: c.foreground, fontFamily: "Inter_400Regular", height: 44 },
-    }).i,
+    StyleSheet.create({ i: { flex: 1, fontSize: 14, color: c.foreground, fontFamily: "Inter_400Regular", height: 44 } }).i,
   summaryChip: (c: ReturnType<typeof useColors>, accent: string) =>
     StyleSheet.create({
-      ch: {
-        flex: 1,
-        backgroundColor: c.card,
-        borderRadius: c.radius,
-        borderWidth: 1,
-        borderColor: c.border,
-        padding: 10,
-        alignItems: "center" as const,
-      },
+      ch: { flex: 1, backgroundColor: c.card, borderRadius: c.radius, borderWidth: 1, borderColor: c.border, padding: 10, alignItems: "center" as const },
     }).ch,
   chipNum: (accent: string) =>
     StyleSheet.create({ t: { fontSize: 20, fontFamily: "Inter_700Bold", color: accent } }).t,
   chipLabel: (c: ReturnType<typeof useColors>) =>
     StyleSheet.create({ t: { fontSize: 11, fontFamily: "Inter_400Regular", color: c.mutedForeground, marginTop: 1 } }).t,
+  backdrop: StyleSheet.create({ b: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "flex-end" as const } }).b,
+  sheet: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({
+      s: { backgroundColor: c.card, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, gap: 4, maxHeight: "85%" },
+    }).s,
+  sheetTitle: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({ t: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: c.foreground, marginBottom: 12 } }).t,
+  input: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({
+      i: { height: 46, borderRadius: c.radius, borderWidth: 1, borderColor: c.border, backgroundColor: c.background, paddingHorizontal: 12, fontSize: 15, color: c.foreground, fontFamily: "Inter_400Regular" },
+    }).i,
+  saveBtn: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({
+      b: { backgroundColor: c.primary, borderRadius: c.radius, height: 46, alignItems: "center" as const, justifyContent: "center" as const, marginTop: 8 },
+    }).b,
 };

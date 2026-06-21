@@ -85,12 +85,28 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="fields"
+        options={{
+          title: "Fields",
+          tabBarLabel: "Fields",
+          tabBarIcon: ({ color, size }) => <Feather name="map-pin" size={size - 2} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="grain"
         options={{
           title: "Grain",
           tabBarLabel: "Grain",
           href: showGrain ? undefined : null,
           tabBarIcon: ({ color, size }) => <Feather name="sun" size={size - 2} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="timecards"
+        options={{
+          title: "Time Cards",
+          tabBarLabel: "Time",
+          tabBarIcon: ({ color, size }) => <Feather name="clock" size={size - 2} color={color} />,
         }}
       />
       <Tabs.Screen
