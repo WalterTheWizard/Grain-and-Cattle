@@ -16,7 +16,7 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 function FarmerProLogo() {
   return (
     <img
-      src={`${import.meta.env.BASE_URL}logo.svg`}
+      src={`${import.meta.env.BASE_URL}logo.png`}
       alt="FarmerPro logo"
       width={120}
       height={120}
