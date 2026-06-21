@@ -17,6 +17,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme, type ThemePreference } from "@/contexts/ThemeContext";
 import { useColors } from "@/hooks/useColors";
 
 function MenuItem({
@@ -65,8 +66,15 @@ function EmployeeItem({ emp }: { emp: { id: number; fullName: string; username: 
   );
 }
 
+const THEME_OPTIONS: { value: ThemePreference; label: string; icon: string }[] = [
+  { value: "light", label: "Light", icon: "sun" },
+  { value: "dark", label: "Dark", icon: "moon" },
+  { value: "system", label: "System", icon: "monitor" },
+];
+
 export default function MoreScreen() {
   const colors = useColors();
+  const { theme, setTheme } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { me, logout } = useAuth();
@@ -197,6 +205,38 @@ export default function MoreScreen() {
         </View>
       )}
 
+      <View style={{ paddingHorizontal: 16, gap: 2, marginTop: 20 }}>
+        <Text style={styles.sectionLabel(colors)}>APPEARANCE</Text>
+        <View style={styles.menuGroup(colors)}>
+          <View style={styles.themeRow}>
+            {THEME_OPTIONS.map((opt, idx) => {
+              const selected = theme === opt.value;
+              return (
+                <Pressable
+                  key={opt.value}
+                  onPress={async () => {
+                    await Haptics.selectionAsync();
+                    setTheme(opt.value);
+                  }}
+                  style={[
+                    styles.themeOption(colors, selected),
+                    idx === 0 && styles.themeOptionFirst(colors),
+                    idx === THEME_OPTIONS.length - 1 && styles.themeOptionLast(colors),
+                  ]}
+                >
+                  <Feather
+                    name={opt.icon as "sun"}
+                    size={16}
+                    color={selected ? colors.primaryForeground : colors.mutedForeground}
+                  />
+                  <Text style={styles.themeOptionLabel(colors, selected)}>{opt.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      </View>
+
       <View style={{ paddingHorizontal: 16, marginTop: 32, alignItems: "center", gap: 4 }}>
         <View style={styles.aboutLogoBox(colors)}>
           <Feather name="activity" size={20} color="#fff" />
@@ -325,4 +365,35 @@ const styles = {
     StyleSheet.create({ t: { fontSize: 13, fontFamily: "Inter_400Regular", color: c.mutedForeground, marginTop: 2 } }).t,
   aboutVersion: (c: ReturnType<typeof useColors>) =>
     StyleSheet.create({ t: { fontSize: 11, fontFamily: "Inter_400Regular", color: c.mutedForeground, marginTop: 6 } }).t,
+  themeRow: StyleSheet.create({
+    r: {
+      flexDirection: "row" as const,
+    },
+  }).r,
+  themeOption: (c: ReturnType<typeof useColors>, selected: boolean) =>
+    StyleSheet.create({
+      o: {
+        flex: 1,
+        flexDirection: "row" as const,
+        alignItems: "center" as const,
+        justifyContent: "center" as const,
+        gap: 6,
+        paddingVertical: 14,
+        backgroundColor: selected ? c.primary : c.card,
+        borderRightWidth: 1,
+        borderRightColor: c.border,
+      },
+    }).o,
+  themeOptionFirst: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({ o: { borderTopLeftRadius: c.radius, borderBottomLeftRadius: c.radius } }).o,
+  themeOptionLast: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({ o: { borderRightWidth: 0, borderTopRightRadius: c.radius, borderBottomRightRadius: c.radius } }).o,
+  themeOptionLabel: (c: ReturnType<typeof useColors>, selected: boolean) =>
+    StyleSheet.create({
+      t: {
+        fontSize: 13,
+        fontFamily: "Inter_500Medium",
+        color: selected ? c.primaryForeground : c.mutedForeground,
+      },
+    }).t,
 };
