@@ -196,6 +196,15 @@ export default function MoreScreen() {
           </View>
         </View>
       )}
+
+      <View style={{ paddingHorizontal: 16, marginTop: 32, alignItems: "center", gap: 4 }}>
+        <View style={styles.aboutLogoBox(colors)}>
+          <Feather name="activity" size={20} color="#fff" />
+        </View>
+        <Text style={styles.aboutAppName(colors)}>FarmerPro</Text>
+        <Text style={styles.aboutTagline(colors)}>Manage. Grow. Succeed.</Text>
+        <Text style={styles.aboutVersion(colors)}>Version 1.0.0</Text>
+      </View>
     </ScrollView>
   );
 }
@@ -308,4 +317,12 @@ const styles = {
     }).b,
   saveBtnText: (c: ReturnType<typeof useColors>) =>
     StyleSheet.create({ t: { color: "#fff", fontFamily: "Inter_600SemiBold", fontSize: 15 } }).t,
+  aboutLogoBox: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({ b: { width: 44, height: 44, borderRadius: 12, backgroundColor: c.primary, alignItems: "center" as const, justifyContent: "center" as const, marginBottom: 6 } }).b,
+  aboutAppName: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({ t: { fontSize: 16, fontFamily: "Inter_700Bold", color: c.foreground } }).t,
+  aboutTagline: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({ t: { fontSize: 13, fontFamily: "Inter_400Regular", color: c.mutedForeground, marginTop: 2 } }).t,
+  aboutVersion: (c: ReturnType<typeof useColors>) =>
+    StyleSheet.create({ t: { fontSize: 11, fontFamily: "Inter_400Regular", color: c.mutedForeground, marginTop: 6 } }).t,
 };

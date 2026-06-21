@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "FarmerPro",
+    "description": "FarmerPro — Manage. Grow. Succeed.",
     "slug": "farmerpro-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
