@@ -103,7 +103,7 @@ function SidebarBody({
           <FarmerProLogo />
           <div>
             <div className="font-bold text-sm leading-tight text-foreground">FarmerPro</div>
-            <div className="text-[10px] text-muted-foreground leading-tight">Cattle Management</div>
+            <div className="text-[10px] text-muted-foreground leading-tight">Manage. Grow. Succeed.</div>
           </div>
         </div>
         {onClose && (

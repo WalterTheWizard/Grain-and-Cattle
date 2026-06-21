@@ -66,7 +66,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-center mb-8">
           <FarmerProLogo />
           <h1 className="mt-3 text-2xl font-bold text-foreground">FarmerPro</h1>
-          <p className="text-sm text-muted-foreground">Cattle Management System</p>
+          <p className="text-sm text-muted-foreground">Manage. Grow. Succeed.</p>
         </div>
 
         <Card>
