@@ -1128,6 +1128,9 @@ components:
         farmType:
           type: ["string", "null"]
           enum: [cattle, grain, both, null]
+        token:
+          type: ["string", "null"]
+          description: Session token returned on employee login for mobile clients (Bearer auth)
 
     SetFarmTypeBody:
       type: object

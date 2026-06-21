@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ehd00GARKwefQOOdnc0Ni"
+uri = "file://artifacts/farmerpro-mobile/assets/images/icon.png"
+type = "image"
+title = "generated_image"

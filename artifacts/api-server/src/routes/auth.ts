@@ -55,22 +55,30 @@ router.post("/auth/employee-login", async (req, res): Promise<void> => {
   });
 
   res.cookie("session", token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: "none", secure: true });
-  res.json(GetMeResponse.parse({
-    farmId: farm.id,
-    farmName: farm.name,
-    email: farm.email,
-    role,
-    employeeId: employee.id,
-    employeeName: employee.fullName,
-    farmType: farm.farmType ?? null,
-  }));
+  res.json({
+    ...GetMeResponse.parse({
+      farmId: farm.id,
+      farmName: farm.name,
+      email: farm.email,
+      role,
+      employeeId: employee.id,
+      employeeName: employee.fullName,
+      farmType: farm.farmType ?? null,
+    }),
+    token,
+  });
 });
 
 // Employee logout. Farm owners sign out via Clerk on the client.
 router.post("/auth/logout", (req, res): void => {
-  const token = req.cookies?.session;
-  if (token) {
-    sessions.delete(token);
+  const cookieToken = req.cookies?.session;
+  if (cookieToken) {
+    sessions.delete(cookieToken);
+  }
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    const bearerToken = authHeader.slice(7);
+    if (bearerToken) sessions.delete(bearerToken);
   }
   res.clearCookie("session");
   res.json({ ok: true });
