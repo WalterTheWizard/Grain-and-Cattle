@@ -9,7 +9,7 @@ import { ClerkLoaded, ClerkProvider } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
+import * as ExpoSplashScreen from "expo-splash-screen";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -17,10 +17,11 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { setBaseUrl } from "@workspace/api-client-react";
 
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import BrandedSplashScreen from "@/components/BrandedSplashScreen";
 
-SplashScreen.preventAutoHideAsync();
+ExpoSplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
 
 if (process.env.EXPO_PUBLIC_DOMAIN) {
@@ -45,7 +46,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
+      ExpoSplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
 
@@ -60,11 +61,7 @@ export default function RootLayout() {
               <GestureHandlerRootView style={{ flex: 1 }}>
                 <KeyboardProvider>
                   <AuthProvider>
-                    <Stack screenOptions={{ headerBackTitle: "Back" }}>
-                      <Stack.Screen name="login" options={{ headerShown: false }} />
-                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                      <Stack.Screen name="cattle" options={{ headerShown: false }} />
-                    </Stack>
+                    <AuthWrapper />
                   </AuthProvider>
                 </KeyboardProvider>
               </GestureHandlerRootView>
@@ -73,5 +70,19 @@ export default function RootLayout() {
         </ClerkProvider>
       </ErrorBoundary>
     </SafeAreaProvider>
+  );
+}
+
+function AuthWrapper() {
+  const { isLoading } = useAuth();
+  return (
+    <>
+      <BrandedSplashScreen visible={isLoading} />
+      <Stack screenOptions={{ headerBackTitle: "Back" }}>
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="cattle" options={{ headerShown: false }} />
+      </Stack>
+    </>
   );
 }
