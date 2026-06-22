@@ -10,9 +10,11 @@ import { tokenCache } from "@clerk/expo/token-cache";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as ExpoSplashScreen from "expo-splash-screen";
+import * as Updates from "expo-updates";
 import * as WebBrowser from "expo-web-browser";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
+import { Alert } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -25,6 +27,28 @@ import BrandedSplashScreen from "@/components/BrandedSplashScreen";
 
 ExpoSplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
+
+async function checkForAppUpdate() {
+  try {
+    if (!Updates.isEnabled) return;
+    const update = await Updates.checkForUpdateAsync();
+    if (!update.isAvailable) return;
+    await Updates.fetchUpdateAsync();
+    Alert.alert(
+      "Update ready",
+      "A new version has been downloaded. Restart now to apply it.",
+      [
+        { text: "Later", style: "cancel" },
+        {
+          text: "Restart",
+          onPress: () => Updates.reloadAsync(),
+        },
+      ]
+    );
+  } catch {
+    // Non-fatal — updates are best-effort
+  }
+}
 
 if (process.env.EXPO_PUBLIC_DOMAIN) {
   setBaseUrl(`https://${process.env.EXPO_PUBLIC_DOMAIN}`);
@@ -51,6 +75,10 @@ export default function RootLayout() {
       ExpoSplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
+
+  useEffect(() => {
+    checkForAppUpdate();
+  }, []);
 
   if (!fontsLoaded && !fontError) return null;
 

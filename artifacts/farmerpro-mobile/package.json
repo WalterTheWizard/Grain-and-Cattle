@@ -64,6 +64,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "dependencies": {
-    "expo-dev-client": "^56.0.20"
+    "expo-dev-client": "^56.0.20",
+    "expo-updates": "^56.0.19"
   }
 }
