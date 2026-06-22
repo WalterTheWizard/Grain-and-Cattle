@@ -48,8 +48,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "4ae3d160-7e17-44d3-aa74-e32e4a66e5f5"
       }
-    }
+    },
+    "owner": "walterthewizard"
   }
 }
