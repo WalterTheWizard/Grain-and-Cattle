@@ -13,8 +13,9 @@ import * as ExpoSplashScreen from "expo-splash-screen";
 import * as Updates from "expo-updates";
 import * as WebBrowser from "expo-web-browser";
 import { StatusBar } from "expo-status-bar";
+import Constants from "expo-constants";
 import React, { useEffect } from "react";
-import { Alert } from "react-native";
+import { Alert, Text, View, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -27,6 +28,10 @@ import BrandedSplashScreen from "@/components/BrandedSplashScreen";
 
 ExpoSplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
+
+const isExpoGo =
+  (Constants as any).executionEnvironment === "storeClient" ||
+  (Constants as any).appOwnership === "expo";
 
 async function checkForAppUpdate() {
   try {
@@ -62,6 +67,37 @@ const queryClient = new QueryClient({
   },
 });
 
+function ExpoGoNotice() {
+  return (
+    <View style={expoGoStyles.container}>
+      <Text style={expoGoStyles.icon}>🌾</Text>
+      <Text style={expoGoStyles.title}>Use the FarmerPro App</Text>
+      <Text style={expoGoStyles.body}>
+        FarmerPro requires a custom development build or the published app to
+        run correctly. Expo Go does not support all the native modules needed
+        for sign-in.
+      </Text>
+      <Text style={expoGoStyles.hint}>
+        Ask your farm owner or IT contact for the FarmerPro app download link.
+      </Text>
+    </View>
+  );
+}
+
+const expoGoStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
+    backgroundColor: "#fff",
+  },
+  icon: { fontSize: 52, marginBottom: 16 },
+  title: { fontSize: 22, fontWeight: "700", color: "#1a1a1a", marginBottom: 12, textAlign: "center" },
+  body: { fontSize: 15, color: "#555", textAlign: "center", lineHeight: 22, marginBottom: 16 },
+  hint: { fontSize: 13, color: "#888", textAlign: "center", lineHeight: 20 },
+});
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
@@ -81,6 +117,14 @@ export default function RootLayout() {
   }, []);
 
   if (!fontsLoaded && !fontError) return null;
+
+  if (isExpoGo) {
+    return (
+      <SafeAreaProvider>
+        <ExpoGoNotice />
+      </SafeAreaProvider>
+    );
+  }
 
   return (
     <SafeAreaProvider>
