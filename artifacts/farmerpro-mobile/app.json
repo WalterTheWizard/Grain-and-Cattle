@@ -40,7 +40,19 @@
       ],
       "expo-font",
       "expo-web-browser",
-      "expo-updates"
+      "expo-updates",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "packagingOptions": {
+              "pickFirst": [
+                "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+              ]
+            }
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
