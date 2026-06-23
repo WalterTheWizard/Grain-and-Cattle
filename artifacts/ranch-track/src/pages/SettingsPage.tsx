@@ -5,7 +5,7 @@ import {
   useGetSettings, useUpdateSettings, useDeleteAccount, useGetMe,
   getGetSettingsQueryKey, getGetMeQueryKey,
 } from "@workspace/api-client-react";
-import { Settings, Trash2, Info, MapPin, ExternalLink } from "lucide-react";
+import { Settings, Trash2, Info, MapPin, ExternalLink, Smartphone, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -198,6 +198,30 @@ export default function SettingsPage() {
               </Button>
             </Link>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Smartphone size={16} />
+            Mobile App
+          </CardTitle>
+          <CardDescription>Install FarmerPro on Android phones for field use</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Download and install the Android APK directly on any Android device. Enable <span className="font-medium text-foreground">Install from unknown sources</span> in your phone's settings if prompted.
+          </p>
+          <a
+            href="https://expo.dev/artifacts/eas/BPM8ZXpHiS_bDN_bXu79RaIrb6ISgQe-fpA8nk5IZ-0.apk"
+            download="FarmerPro.apk"
+          >
+            <Button variant="outline" className="gap-2">
+              <Download size={14} />
+              Download Android APK
+            </Button>
+          </a>
         </CardContent>
       </Card>
 
