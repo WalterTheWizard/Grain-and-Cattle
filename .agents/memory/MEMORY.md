@@ -3,3 +3,4 @@
 - [Overlay z-index scale](zindex-overlay-scale.md) — Leaflet ~1000 < drawer 1100 < dialog/alert 1200 < select 1300; new portal UI must slot above what it covers, never z-50.
 - [api-zod barrel export conflict](api-zod-barrel-conflict.md) — Orval's zod client generates both Zod schemas (generated/api.ts) and TS interfaces (generated/types/) with the same name; index.ts must only `export * from "./generated/api"` — drop the types re-export.
 - [Mobile Bearer token auth](mobile-bearer-auth.md) — Expo mobile uses Bearer token from loginEmployee response body; `setAuthTokenGetter` + AsyncStorage persist across sessions; orval zod config must drop `schemas` key to avoid barrel conflict regenerating on codegen.
+- [reanimated worklets peer dep](reanimated-worklets-peer-dep.md) — react-native-worklets must stay in devDependencies; reanimated v4 Babel plugin is a direct re-export of it; removing it crashes Metro at bundle time.
