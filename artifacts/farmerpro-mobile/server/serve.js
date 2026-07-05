@@ -16,6 +16,8 @@ const path = require("path");
 const STATIC_ROOT = path.resolve(__dirname, "..", "static-build");
 const TEMPLATE_PATH = path.resolve(__dirname, "templates", "landing-page.html");
 const basePath = (process.env.BASE_PATH || "/").replace(/\/+$/, "");
+const APK_DOWNLOAD_URL =
+  "https://expo.dev/artifacts/eas/BPM8ZXpHiS_bDN_bXu79RaIrb6ISgQe-fpA8nk5IZ-0.apk";
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -70,11 +72,10 @@ function serveLandingPage(req, res, landingPageTemplate, appName) {
   const protocol = forwardedProto || "https";
   const host = req.headers["x-forwarded-host"] || req.headers["host"];
   const baseUrl = `${protocol}://${host}`;
-  const expsUrl = `${host}`;
 
   const html = landingPageTemplate
     .replace(/BASE_URL_PLACEHOLDER/g, baseUrl)
-    .replace(/EXPS_URL_PLACEHOLDER/g, expsUrl)
+    .replace(/APK_URL_PLACEHOLDER/g, APK_DOWNLOAD_URL)
     .replace(/APP_NAME_PLACEHOLDER/g, appName);
 
   res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
