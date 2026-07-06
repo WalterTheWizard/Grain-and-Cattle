@@ -5,3 +5,4 @@
 - [Mobile Bearer token auth](mobile-bearer-auth.md) — Expo mobile uses Bearer token from loginEmployee response body; `setAuthTokenGetter` + AsyncStorage persist across sessions; orval zod config must drop `schemas` key to avoid barrel conflict regenerating on codegen.
 - [reanimated worklets peer dep](reanimated-worklets-peer-dep.md) — react-native-worklets must stay in devDependencies; reanimated v4 Babel plugin is a direct re-export of it; removing it crashes Metro at bundle time.
 - [Expo Go vs custom dev client landing page](expo-go-vs-dev-client-landing-page.md) — no `sdkVersion` in app.json means the app needs a dev-client build; the default Expo Go landing page/QR will hang on retry, link to the APK instead.
+- [EAS build env vars and git VCS quirks](eas-build-env-vars.md) — EAS builds need `EXPO_PUBLIC_*` set in eas.json's `env` block explicitly; use `EAS_NO_VCS=1` to avoid git-lock conflicts with sandbox guard.

@@ -9,6 +9,10 @@
       "channel": "development",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_DOMAIN": "FarmerPro.replit.app",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_bXVzaWNhbC1maXJlZmx5LTg0LmNsZXJrLmFjY291bnRzLmRldiQ"
       }
     },
     "preview": {
@@ -16,6 +20,10 @@
       "channel": "preview",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_DOMAIN": "FarmerPro.replit.app",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_bXVzaWNhbC1maXJlZmx5LTg0LmNsZXJrLmFjY291bnRzLmRldiQ"
       }
     },
     "production": {
@@ -25,6 +33,10 @@
       },
       "ios": {
         "distribution": "store"
+      },
+      "env": {
+        "EXPO_PUBLIC_DOMAIN": "FarmerPro.replit.app",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_bXVzaWNhbC1maXJlZmx5LTg0LmNsZXJrLmFjY291bnRzLmRldiQ"
       }
     }
   },
