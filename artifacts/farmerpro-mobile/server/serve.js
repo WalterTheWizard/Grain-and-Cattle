@@ -17,7 +17,7 @@ const STATIC_ROOT = path.resolve(__dirname, "..", "static-build");
 const TEMPLATE_PATH = path.resolve(__dirname, "templates", "landing-page.html");
 const basePath = (process.env.BASE_PATH || "/").replace(/\/+$/, "");
 const APK_DOWNLOAD_URL =
-  "https://expo.dev/artifacts/eas/BPM8ZXpHiS_bDN_bXu79RaIrb6ISgQe-fpA8nk5IZ-0.apk";
+  "https://expo.dev/artifacts/eas/dfoU3QjbxZdDLbMSLjpid81qpQ6Dvqlpq3eaZdaFoNM.apk";
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",

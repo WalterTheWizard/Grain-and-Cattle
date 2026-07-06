@@ -214,7 +214,7 @@ export default function SettingsPage() {
             Download and install the Android APK directly on any Android device. Enable <span className="font-medium text-foreground">Install from unknown sources</span> in your phone's settings if prompted.
           </p>
           <a
-            href="https://expo.dev/artifacts/eas/BPM8ZXpHiS_bDN_bXu79RaIrb6ISgQe-fpA8nk5IZ-0.apk"
+            href="https://expo.dev/artifacts/eas/dfoU3QjbxZdDLbMSLjpid81qpQ6Dvqlpq3eaZdaFoNM.apk"
             download="FarmerPro.apk"
           >
             <Button variant="outline" className="gap-2">
