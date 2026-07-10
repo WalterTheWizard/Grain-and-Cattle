@@ -12,6 +12,7 @@ import cropsRouter from "./crops";
 import storageRouter from "./storage";
 import equipmentRouter from "./equipment";
 import inputsRouter from "./inputs";
+import messagesRouter from "./messages";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(cropsRouter);
 router.use(storageRouter);
 router.use(equipmentRouter);
 router.use(inputsRouter);
+router.use(messagesRouter);
 
 export default router;

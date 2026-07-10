@@ -5,7 +5,7 @@ import { useClerk } from "@clerk/react";
 import { useLogout, getGetMeQueryKey, type AuthResponse } from "@workspace/api-client-react";
 import {
   LayoutDashboard, Beef, ClipboardList, Map, Users, Settings, LogOut, Clock,
-  Sprout, Warehouse, Tractor, FlaskConical, Menu, X,
+  Sprout, Warehouse, Tractor, FlaskConical, Menu, X, MessageSquare,
 } from "lucide-react";
 
 interface LayoutProps {
@@ -57,7 +57,10 @@ const FARM_OPS_GROUP: NavGroup = {
 
 const SETTINGS_GROUP: NavGroup = {
   label: null,
-  items: [{ path: "/settings", label: "Settings", icon: Settings }],
+  items: [
+    { path: "/chat", label: "Farm Chat", icon: MessageSquare },
+    { path: "/settings", label: "Settings", icon: Settings },
+  ],
 };
 
 function getNavGroups(farmType: string | null | undefined): NavGroup[] {

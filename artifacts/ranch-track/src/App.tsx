@@ -21,6 +21,7 @@ import CropsPage from "@/pages/CropsPage";
 import StoragePage from "@/pages/StoragePage";
 import EquipmentPage from "@/pages/EquipmentPage";
 import InputsPage from "@/pages/InputsPage";
+import ChatPage from "@/pages/ChatPage";
 import NotFound from "@/pages/not-found";
 import OnboardingPage from "@/pages/OnboardingPage";
 import type { AuthResponse } from "@workspace/api-client-react";
@@ -171,6 +172,7 @@ function AuthenticatedApp() {
         <Route path="/storage" component={StoragePage} />
         <Route path="/equipment" component={EquipmentPage} />
         <Route path="/inputs" component={InputsPage} />
+        <Route path="/chat" component={ChatPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route component={NotFound} />
       </Switch>

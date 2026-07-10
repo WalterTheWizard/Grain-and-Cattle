@@ -310,6 +310,27 @@ export const AddHealthRecordBody = zod.object({
 
 
 /**
+ * @summary List farm chat messages
+ */
+export const ListMessagesResponseItem = zod.object({
+  "id": zod.number(),
+  "senderName": zod.string(),
+  "senderRole": zod.enum(['owner', 'employer', 'employee']),
+  "content": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListMessagesResponse = zod.array(ListMessagesResponseItem)
+
+
+/**
+ * @summary Post a new chat message
+ */
+export const CreateMessageBody = zod.object({
+  "content": zod.string()
+})
+
+
+/**
  * @summary List farm tasks
  */
 export const ListTasksQueryParams = zod.object({

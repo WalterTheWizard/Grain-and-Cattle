@@ -234,6 +234,27 @@ export interface HealthInput {
   notes?: string;
 }
 
+export type MessageSenderRole = typeof MessageSenderRole[keyof typeof MessageSenderRole];
+
+
+export const MessageSenderRole = {
+  owner: 'owner',
+  employer: 'employer',
+  employee: 'employee',
+} as const;
+
+export interface Message {
+  id: number;
+  senderName: string;
+  senderRole: MessageSenderRole;
+  content: string;
+  createdAt: string;
+}
+
+export interface MessageInput {
+  content: string;
+}
+
 export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
 
 

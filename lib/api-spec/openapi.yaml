@@ -33,6 +33,8 @@ tags:
     description: Equipment and maintenance logs
   - name: inputs
     description: Seed, fertilizer, and chemical inputs
+  - name: messages
+    description: Farm-wide chat messages
 
 paths:
   /healthz:
@@ -345,6 +347,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthRecord"
+
+  /messages:
+    get:
+      operationId: listMessages
+      tags: [messages]
+      summary: List farm chat messages
+      responses:
+        "200":
+          description: Message list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      operationId: createMessage
+      tags: [messages]
+      summary: Post a new chat message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Message created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
 
   /tasks:
     get:
@@ -1337,6 +1371,29 @@ components:
         date:
           type: string
         notes:
+          type: string
+
+    Message:
+      type: object
+      required: [id, senderName, senderRole, content, createdAt]
+      properties:
+        id:
+          type: integer
+        senderName:
+          type: string
+        senderRole:
+          type: string
+          enum: [owner, employer, employee]
+        content:
+          type: string
+        createdAt:
+          type: string
+
+    MessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
           type: string
 
     Task:
