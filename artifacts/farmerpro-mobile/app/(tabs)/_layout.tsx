@@ -111,6 +111,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="chat"
+        options={{
+          title: "Farm Chat",
+          tabBarLabel: "Chat",
+          tabBarIcon: ({ color, size }) => <Feather name="message-circle" size={size - 2} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="more"
         options={{
           title: "More",
