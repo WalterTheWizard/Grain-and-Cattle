@@ -49,3 +49,4 @@ Thumbs.db
 .local/
 
 farmerpro-full-backup.bundle
+artifacts/ranch-track/.env

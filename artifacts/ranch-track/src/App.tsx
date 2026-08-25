@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { ClerkProvider, SignIn, SignUp, useClerk, useAuth } from "@clerk/react";
-import { publishableKeyFromHost } from "@clerk/react/internal";
 import { shadcn } from "@clerk/themes";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,15 +29,8 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000 } },
 });
 
-// REQUIRED — copy verbatim. Resolves the key from window.location.hostname so the
-// same build serves multiple Clerk custom domains.
-const clerkPubKey = publishableKeyFromHost(
-  window.location.hostname,
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
-);
-
-// REQUIRED — copy verbatim. Empty in dev, auto-set in prod. Do NOT gate on PROD.
-const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const clerkDomain = "united-dory-4870.clerk.accounts.dev";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -186,7 +178,7 @@ function ClerkProviderWithRoutes() {
   return (
     <ClerkProvider
       publishableKey={clerkPubKey}
-      proxyUrl={clerkProxyUrl}
+      domain={clerkDomain}
       appearance={clerkAppearance}
       signInUrl={`${basePath}/sign-in`}
       signUpUrl={`${basePath}/sign-up`}
